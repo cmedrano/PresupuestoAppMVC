@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-5 text-center">Home</h2>
+
+    <div class="row g-4 justify-content-center">
+
+        <!-- CARD 1 -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-wallet2 fs-1 text-primary me-3"></i>
+                        <h5 class="card-title mb-0">Presupuesto</h5>
+                    </div>
+                    <p class="card-text text-muted">
+                        Gestiona tu presupuesto mensual, controla ingresos y egresos.
+                    </p>
+                    <a asp-controller="Rubro" asp-action="Index" class="btn btn-primary">
+                        Ver Rubros
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-cash-stack fs-1 text-success me-3"></i>
+                        <h5 class="card-title mb-0">Gastos</h5>
+                    </div>
+                    <p class="card-text text-muted">
+                        Registra y administra todos tus gastos de forma simple.
+                    </p>
+                    <a asp-controller="Gasto" asp-action="Index" class="btn btn-success">
+                        Ver Gastos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-graph-up-arrow fs-1 text-danger me-3"></i>
+                        <h5 class="card-title mb-0">Estadísticas</h5>
+                    </div>
+                    <p class="card-text text-muted">
+                        Visualiza un resumen general de tus movimientos económicos.
+                    </p>
+                    <a asp-controller="Home" asp-action="Privacy" class="btn btn-danger">
+                        Ver Reporte
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,515 @@
+﻿@using PresupuestoMVC.Models.DTOs
+@using PresupuestoMVC.Models.Entities
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var rubros = ViewBag.Rubros as IEnumerable<RubroType>;
+    var cuentas = ViewBag.Cuentas as IEnumerable<CuentaResponseDto>;
+    var paginacion = ViewBag.Paginacion as PaginacionRespuestaDto<GastoResponseDto>;
+
+    int totalPaginas = (int)Math.Ceiling((double)paginacion.TotalRegistros / ViewBag.TamañoPagina);
+    int inicio = Math.Max(1, ViewBag.PaginaActual - 2);
+    int fin = Math.Min(totalPaginas, ViewBag.PaginaActual + 2);
+}
+<!-- Header -->
+<header class="oca-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold">
+                    <i class="bi bi-cash-stack me-3"></i>
+                    Gestión de Gastos
+                </h1>
+                <p class="lead mb-0">Sistema de control y seguimiento de gastos - OCA Argentina</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Filtros -->
+    <section class="filter-section">
+        <div class="row align-items-end">
+
+            <div class="col-md-4">
+                <label for="rubroFilter" class="form-label fw-semibold">
+                    <i class="bi bi-tags me-1"></i>Filtrar por Rubro
+                </label>
+                <select class="form-select" id="rubroFilter">
+                    <option value="">Todos los rubros</option>
+                    @if (rubros != null)
+                    {
+                        foreach (var rubro in rubros)
+                        {
+                            @* <option value="@rubro.Id" >@rubro.nombreRubro</option> *@
+                            <option value="@rubro.Id"
+                                    selected="@(ViewBag.FiltroRubroId?.ToString() == rubro.Id.ToString())">
+                                @rubro.nombreRubro
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="cuentaFilter" class="form-label fw-semibold">
+                    <i class="bi bi-wallet2 me-1"></i>Filtrar por Cuenta
+                </label>
+                <select class="form-select" id="cuentaFilter">
+                    <option value="">Todas las cuentas</option>
+                    @if (cuentas != null)
+                    {
+                        foreach (var cuenta in cuentas)
+                        {
+                            @* <option value="@cuenta.Id">@cuenta.nombreCuenta</option> *@
+                            <option value="@cuenta.Id"
+                                    selected="@(ViewBag.FiltroCuentaId?.ToString() == cuenta.Id.ToString())">
+                                @cuenta.nombreCuenta
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <div class="d-flex gap-2 align-items-end">
+                    <button class="btn btn-outline-primary" id="btnAplicarFiltros"
+                            onclick="aplicarFiltros()">
+                        <i class="bi bi-funnel"></i>Aplicar Filtros
+                    </button>
+                    <button class="btn btn-outline-secondary" id="btnLimpiarFiltros"
+                            onclick="limpiarFiltros()">
+                        <i class="bi bi-arrow-clockwise"></i>Limpiar
+                    </button>
+                    <button class="btn btn-outline-success" id="btnNuevoGasto"
+                            onclick="abrirModalCrear()">
+                        <i class="bi bi-plus-circle"></i>Nuevo Gasto
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Loading Spinner -->
+    @* <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2 text-muted">Cargando gastos...</p>
+    </div> *@
+
+    <!-- Grilla de Gastos -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-oca">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Monto</th>
+                    <th scope="col">Nota</th>
+                    <th scope="col">Rubro</th>
+                    <th scope="col">Cuenta</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="gastosTableBody">
+                <!-- Los gastos se cargarán dinámicamente -->
+                @if (paginacion.Datos != null && paginacion.Datos.Any())
+                {
+                    foreach (var gasto in paginacion.Datos)
+                    {
+                        <tr>
+                            <td>@gasto.Id</td>
+                            <td data-fecha="@gasto.Fecha.ToString("yyyy-MM-dd")">
+                                @gasto.Fecha.ToString("dd/MM/yyyy")
+                            </td>
+                            <td data-monto="@gasto.Monto">
+                                @gasto.Monto.ToString("C")
+                            </td>
+                            <td>@gasto.Nota</td>
+                            <td data-rubroid="@gasto.RubroTypeId">
+                                @gasto.RubroTypeNombre
+                            </td>
+                            <td data-cuentaid="@gasto.CuentaId">
+                                @gasto.CuentaNombre
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary me-1 btn-editar-gasto" 
+                                    onclick="abrirModalEditar(
+                                        '@gasto.Id', 
+                                        '@gasto.Fecha.ToString("yyyy-MM-dd")', 
+                                        @gasto.Monto.ToString().Replace(",", "."), 
+                                        '@Html.Raw(gasto.Nota?.Replace("'", "\\'") ?? "")', 
+                                        @gasto.RubroTypeId, 
+                                        @gasto.CuentaId
+                                    )">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </button>
+                                <button class="btn btn-sm btn-danger btn-eliminar-gasto" 
+                                    onclick="abrirModalEliminar(
+                                        '@gasto.Id', 
+                                        '@gasto.Fecha.ToString("dd/MM/yyyy")', 
+                                        @gasto.Monto.ToString().Replace(",", "."), 
+                                        '@gasto.RubroTypeNombre'
+                                    )">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginación -->
+    <nav aria-label="Paginación de gastos">
+            <ul class="pagination justify-content-center">
+                <!-- Botón Anterior -->
+                <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+                    @if (ViewBag.PaginaActual > 1)
+                    {
+                        <a class="page-link" 
+                           href="@Url.Action("Index", new { 
+                               rubroTypeId = ViewBag.FiltroRubroId, 
+                               cuentaId = ViewBag.FiltroCuentaId, 
+                               pagina = ViewBag.PaginaActual - 1, 
+                               tamañoPagina = ViewBag.TamañoPagina 
+                           })">
+                            Anterior
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-link">Anterior</span>
+                    }
+                </li>
+            
+                @for (int i = inicio; i <= fin; i++)
+                {
+                    <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+                        <a class="page-link" 
+                           href="@Url.Action("Index", new { 
+                               rubroTypeId = ViewBag.FiltroRubroId, 
+                               cuentaId = ViewBag.FiltroCuentaId, 
+                               pagina = i, 
+                               tamañoPagina = ViewBag.TamañoPagina 
+                           })">
+                            @i
+                        </a>
+                    </li>
+                }
+                <!-- Botón Siguiente -->
+                <li class="page-item @(ViewBag.PaginaActual >= totalPaginas ? "disabled" : "")">
+                    @if (ViewBag.PaginaActual < totalPaginas)
+                    {
+                        <a class="page-link" 
+                           href="@Url.Action("Index", new { 
+                               rubroTypeId = ViewBag.FiltroRubroId, 
+                               cuentaId = ViewBag.FiltroCuentaId, 
+                               pagina = ViewBag.PaginaActual + 1, 
+                               tamañoPagina = ViewBag.TamañoPagina 
+                           })">
+                            Siguiente
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-link">Siguiente</span>
+                    }
+                </li>
+            </ul>
+    </nav>
+</div>
+
+<!-- Modal de Creación -->
+<div class="modal fade" id="modalCrear" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-success">
+            <!-- Header verde -->
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Gasto
+                </h5>
+                <button type="button" class="btn-close btn-close-white" 
+                        data-bs-dismiss="modal"></button>
+            </div>
+            
+            <!-- Formulario -->
+            <form asp-controller="Gasto" asp-action="Create" method="post">
+                <div class="modal-body">
+                    <!-- Fecha (hoy por defecto) -->
+                    <div class="mb-3">
+                        <label for="crearFecha" class="form-label">Fecha</label>
+                        <input type="date" id="crearFecha" name="Fecha" 
+                               class="form-control" required 
+                               value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+                    
+                    <!-- Monto -->
+                    <div class="mb-3">
+                        <label for="crearMonto" class="form-label">Monto</label>
+                        <input type="number" step="0.01" id="crearMonto" 
+                               name="Monto" class="form-control" required 
+                               placeholder="$ 0.00" />
+                    </div>
+                    
+                    <!-- Nota -->
+                    <div class="mb-3">
+                        <label for="crearNota" class="form-label">Nota</label>
+                        <textarea id="crearNota" name="Nota" 
+                                  class="form-control" rows="3"
+                                  placeholder="Descripción del gasto..."></textarea>
+                    </div>
+                    
+                    <!-- Rubro -->
+                    <div class="mb-3">
+                        <label for="crearRubroId" class="form-label">Rubro</label>
+                        <select id="crearRubroId" name="RubroTypeId" 
+                                class="form-select" required>
+                            <option value="">Seleccionar rubro...</option>
+                            @if (ViewBag.Rubros != null)
+                            {
+                                foreach (var rubro in ViewBag.Rubros)
+                                {
+                                    <option value="@rubro.Id">@rubro.nombreRubro</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    
+                    <!-- Cuenta -->
+                    <div class="mb-3">
+                        <label for="crearCuentaId" class="form-label">Cuenta</label>
+                        <select id="crearCuentaId" name="CuentaId" 
+                                class="form-select" required>
+                            <option value="">Seleccionar cuenta...</option>
+                            @if (ViewBag.Cuentas != null)
+                            {
+                                foreach (var cuenta in ViewBag.Cuentas)
+                                {
+                                    <option value="@cuenta.Id">@cuenta.nombreCuenta</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" 
+                            data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle me-1"></i>Crear Gasto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Edición -->
+<div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form asp-controller="Gasto" asp-action="Edit" method="post">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square me-2"></i>Editar Gasto
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" 
+                            data-bs-dismiss="modal"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <!-- Campo oculto para el ID -->
+                    <input type="hidden" id="editGastoId" name="Id" value=""/>
+                    
+                    <!-- Fecha -->
+                    <div class="mb-3">
+                        <label for="editFecha" class="form-label">Fecha</label>
+                        <input type="date" id="editFecha" name="Fecha" 
+                               class="form-control" required />
+                    </div>
+                    
+                    <!-- Monto -->
+                    <div class="mb-3">
+                        <label for="editMonto" class="form-label">Monto</label>
+                        <input type="number" step="0.01" id="editMonto" 
+                               name="Monto" class="form-control" required />
+                    </div>
+                    
+                    <!-- Nota -->
+                    <div class="mb-3">
+                        <label for="editNota" class="form-label">Nota</label>
+                        <textarea id="editNota" name="Nota" 
+                                  class="form-control" rows="3"></textarea>
+                    </div>
+                    
+                    <!-- Rubro -->
+                    <div class="mb-3">
+                        <label for="editRubroId" class="form-label">Rubro</label>
+                        <select id="editRubroId" name="RubroTypeId" 
+                                class="form-select" required>
+                            <option value="">Seleccionar rubro...</option>
+                            @if (ViewBag.Rubros != null)
+                            {
+                                foreach (var rubro in ViewBag.Rubros)
+                                {
+                                    <option value="@rubro.Id">@rubro.nombreRubro</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    
+                    <!-- Cuenta -->
+                    <div class="mb-3">
+                        <label for="editCuentaId" class="form-label">Cuenta</label>
+                        <select id="editCuentaId" name="CuentaId" 
+                                class="form-select" required>
+                            <option value="">Seleccionar cuenta...</option>
+                            @if (ViewBag.Cuentas != null)
+                            {
+                                foreach (var cuenta in ViewBag.Cuentas)
+                                {
+                                    <option value="@cuenta.Id">@cuenta.nombreCuenta</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" 
+                            data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Eliminación -->
+<div class="modal fade" id="modalEliminar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <!-- Header rojo -->
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" 
+                        data-bs-dismiss="modal"></button>
+            </div>
+            
+            <!-- Formulario -->
+            <form asp-controller="Gasto" asp-action="Delete" method="post">
+                <div class="modal-body">
+                    <!-- Campo oculto para el ID -->
+                    <input type="hidden" id="deleteGastoId" name="id" />
+                    
+                    <!-- Mensaje de confirmación -->
+                    <div class="text-center">
+                        <i class="bi bi-trash text-danger" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">¿Estás seguro de eliminar este gasto?</h5>
+                        <p class="text-muted">
+                            Esta acción no se puede deshacer. El gasto será eliminado permanentemente.
+                        </p>
+                        
+                        <!-- Información del gasto a eliminar -->
+                        <div class="alert alert-light mt-3 text-start" id="deleteGastoInfo">
+                            <div class="row">
+                                <div class="col-6"><strong>ID:</strong> <span id="deleteGastoIdText">-</span></div>
+                                <div class="col-6"><strong>Fecha:</strong> <span id="deleteGastoFecha">-</span></div>
+                                <div class="col-6 mt-2"><strong>Monto:</strong> <span id="deleteGastoMonto">-</span></div>
+                                <div class="col-6 mt-2"><strong>Rubro:</strong> <span id="deleteGastoRubro">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" 
+                            data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Sí, Eliminar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function abrirModalEditar(id, fecha, monto, nota, rubroId, cuentaId) {
+        // Llenar formulario
+        document.getElementById('editGastoId').value = id;
+        document.getElementById('editFecha').value = fecha;
+        document.getElementById('editMonto').value = monto;
+        document.getElementById('editNota').value = nota;
+        document.getElementById('editRubroId').value = rubroId;
+        document.getElementById('editCuentaId').value = cuentaId;
+    
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalEditar'));
+        modal.show();
+    }
+
+    function abrirModalCrear() {
+        // Resetear formulario
+        document.getElementById('crearFecha').value = new Date().toISOString().split('T')[0];
+        document.getElementById('crearMonto').value = '';
+        document.getElementById('crearNota').value = '';
+        document.getElementById('crearRubroId').value = '';
+        document.getElementById('crearCuentaId').value = '';
+    
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalCrear'));
+        modal.show();
+    }
+
+    function abrirModalEliminar(id, fecha, monto, rubro) {
+        // Llenar formulario
+        document.getElementById('deleteGastoId').value = id;
+        document.getElementById('deleteGastoIdText').textContent = id;
+        document.getElementById('deleteGastoFecha').textContent = fecha;
+        document.getElementById('deleteGastoMonto').textContent = '$' + parseFloat(monto).toFixed(2);
+        document.getElementById('deleteGastoRubro').textContent = rubro;
+    
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+        modal.show();
+    }
+
+    function limpiarFiltros() {
+        window.location.href = '@Url.Action("Index", "Gasto")';
+    }
+
+    function aplicarFiltros() {
+        const rubroId = document.getElementById('rubroFilter').value;
+        const cuentaId = document.getElementById('cuentaFilter').value;
+
+        // Construir URL con parámetros
+        let url = '@Url.Action("Index", "Gasto")';
+        const params = new URLSearchParams();
+
+        if (rubroId) params.append('rubroTypeId', rubroId);
+        if (cuentaId) params.append('cuentaId', cuentaId);
+
+        // Mantener página actual
+        params.append('pagina', 1);
+        params.append('tamañoPagina', @ViewBag.TamañoPagina);
+
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+
+        window.location.href = url;
+    }
+
+</script>
