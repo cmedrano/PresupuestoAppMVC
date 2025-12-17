@@ -1,13 +1,147 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PresupuestoMVC.Models.Entities;
+using PresupuestoMVC.Models.ViewModels;
+using PresupuestoMVC.Services;
+using System.Globalization;
 
 namespace PresupuestoMVC.Controllers
 {
     public class RubroController : Controller
     {
-        public IActionResult Index()
+        private readonly IRubroService _rubroService;
+
+        public RubroController(IRubroService rubroService)
         {
-            return View("Views/Rubros/Rubros.cshtml");
+            _rubroService = rubroService;
         }
+
+        public async Task<IActionResult> Index(int? rubroTypeId = null, int? mes = null, int? anio = null, int pagina = 1, int tamañoPagina = 10)
+        {
+            try
+            {
+                // Cargar datos para los dropdowns
+                var rubros = await _rubroService.GetAllRubroTypesAsync();
+
+                // Años: 2025 + 5 años 2025-2030
+                var anios = Enumerable.Range(2025, 6).ToList();
+
+                var meses = Enumerable.Range(1, 12)
+                    .Select(m => new
+                    {
+                        Numero = m,
+                        Nombre = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m).ToLower())
+                    })
+                    .ToList();
+
+                // Crear filtro para el servicio
+                var filtro = new FiltroRubroViewRequest
+                {
+                    RubroTypeId = rubroTypeId,
+                    Mes = mes,
+                    Anio = anio,
+                    Pagina = pagina,
+                    TamañoPagina = tamañoPagina
+                };
+
+                // Obtener datos paginados y filtrados
+                var resultadoPaginado = await _rubroService.GetFiltradosAsync(filtro, pagina, tamañoPagina);
+
+                // Pasar datos a la vista
+                ViewBag.Rubros = rubros;
+                ViewBag.Meses = meses;
+                ViewBag.Anios = anios;
+
+                ViewBag.FiltroRubroId = rubroTypeId;
+                ViewBag.FiltroMes = mes;
+                ViewBag.FiltroAnio = anio;
+
+                ViewBag.Data = resultadoPaginado.Datos;
+                ViewBag.Paginacion = resultadoPaginado;
+                ViewBag.PaginaActual = pagina;
+                ViewBag.TamañoPagina = tamañoPagina;
+
+                return View("Views/Rubros/Rubros.cshtml");
+            }
+            catch (Exception ex)
+            {
+                // Manejar error y redirigir a página de error
+                TempData["Error"] = "Error al cargar los datos: " + ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int Id, UpdateRubroViewRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Datos inválidos";
+                    return RedirectToAction("Index");
+                }
+
+                await _rubroService.UpdateAsync(Id, model);
+
+                TempData["Success"] = "Rubro actualizado correctamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateRubroViewRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Datos inválidos";
+                    return RedirectToAction("Index");
+                }
+
+                await _rubroService.CreateAsync(model);
+
+                TempData["Success"] = "Rubro creado correctamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Datos inválidos";
+                    return RedirectToAction("Index");
+                }
+
+                await _rubroService.DeleteAsync(id);
+
+                TempData["Success"] = "Rubro eliminado correctamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+
+
     }
 }

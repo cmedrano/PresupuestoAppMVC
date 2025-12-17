@@ -13,7 +13,7 @@ namespace PresupuestoMVC.Data
             CreateMap<LoginResponseDto, User>().ReverseMap();
 
             // Rubro
-            CreateMap<Rubro, RubroResponseDTO>()
+            CreateMap<Rubro, RubroResponseDto>()
                     // Mapear el ID del tipo de rubro
                     .ForMember(dest => dest.RubroTypeId, opt => opt.MapFrom(src => src.RubroTypeId))
                     .ForMember(dest => dest.tipoRubroNombre, opt => opt.MapFrom(src => src.tipoRubro.nombreRubro));

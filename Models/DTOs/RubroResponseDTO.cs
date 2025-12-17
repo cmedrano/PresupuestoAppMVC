@@ -1,6 +1,6 @@
 ﻿namespace PresupuestoMVC.Models.DTOs
 {
-    public class RubroResponseDTO
+    public class RubroResponseDto
     {
         public int Id { get; set; }
         public int RubroTypeId { get; set; }

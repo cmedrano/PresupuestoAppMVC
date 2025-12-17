@@ -6,9 +6,12 @@ namespace PresupuestoMVC.Services
 {
     public interface IRubroService
     {
-        Task<RubroResponseDTO> GetByIdAsync(int id);
-        Task<IEnumerable<RubroResponseDTO>> GetAllRubroAsync();
+        Task<RubroResponseDto> GetByIdAsync(int id);
+        Task<IEnumerable<RubroResponseDto>> GetAllRubroAsync();
         Task<IEnumerable<RubroType>> GetAllRubroTypesAsync();
-        Task<RubroResponseDTO> CreateAsync(CreateRubroViewRequest createDto);
+        Task<RubroResponseDto> CreateAsync(CreateRubroViewRequest createDto);
+        Task<RubroResponseDto> UpdateAsync(int id, UpdateRubroViewRequest updateDto);
+        Task<bool> DeleteAsync(int id);
+        Task<PaginacionRespuestaDto<RubroResponseDto>> GetFiltradosAsync(FiltroRubroViewRequest filtro, int pagina, int tamañoPagina);
     }
 }

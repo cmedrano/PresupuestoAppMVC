@@ -19,7 +19,7 @@
             <div class="col-md-8">
                 <h1 class="display-5 fw-bold">
                     <i class="bi bi-cash-stack me-3"></i>
-                    Gestión de Gastos
+                    Sección de Gastos
                 </h1>
                 <p class="lead mb-0">Sistema de control y seguimiento de gastos - OCA Argentina</p>
             </div>
@@ -43,7 +43,6 @@
                     {
                         foreach (var rubro in rubros)
                         {
-                            @* <option value="@rubro.Id" >@rubro.nombreRubro</option> *@
                             <option value="@rubro.Id"
                                     selected="@(ViewBag.FiltroRubroId?.ToString() == rubro.Id.ToString())">
                                 @rubro.nombreRubro

@@ -9,22 +9,15 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PresupuestoMVC.styles.css" asp-append-version="true" />
 </head>
-<style>
-    #menu li:hover a {
-        background-color: rgba(255,255,255,0.15);
-        color: white !important;
-    }
-</style>
 <body>
     <div class="container-fluid">
         <div class="row flex-nowrap">
-            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 sidebar">
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 border-end border-bottom border-3 border-dark">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white h-100 sidebar">
                     <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <span class="fs-5 d-none d-sm-inline">Dashboard OCA</span>
+                        <span class="fs-3 d-none d-sm-inline sidebar-type-color">Dashboard OCA</span>
                     </a>
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-
                         <li class="nav-item">
                             <a asp-controller="Home" asp-action="Index" class="nav-link align-middle px-0 @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home")">
                                 <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
@@ -32,7 +25,8 @@
                         </li>
                         <li>
                             <a asp-controller="Rubro" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Rubro")">
-                                <i class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">Rubros</span>
+                                 <i class="bi bi-cash-stack fs-4"></i>
+                                <span class="ms-1 d-none d-sm-inline">Rubros</span>
                             </a>
                         </li>
                         <li>
@@ -43,27 +37,39 @@
 
                     </ul>
                     <hr>
-                    <div class="dropdown pb-4">
-                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://github.com/mdo.png" alt="hugenerd" width="30" height="30" class="rounded-circle">
-                            <span class="d-none d-sm-inline mx-1">loser</span>
+                    <div class="dropdown pb-4 mt-auto">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-3 me-2 sidebar-type-color"></i>
+                            <span class="d-none d-sm-inline mx-1 sidebar-type-color">My Account</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                            <li><a class="dropdown-item" href="#">New project...</a></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
+                            <li>
+                                <button class="dropdown-item">
+                                    <i class="bi bi-gear-fill me-2"></i>
+                                    <span>Settings</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button id="darkModeBtn" class="dropdown-item" onclick="toggleDarkMode()">
+                                    <i id="darkModeIcon" class="bi bi-moon me-2"></i>
+                                    <span id="darkModeText">Modo Oscuro</span>
+                                </button>
+                            </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <form asp-controller="Login" asp-action="Logout" method="post" class="d-inline">
-                                <button type="submit" class="dropdown-item">Sign out</button>
+                                <button type="submit" class="dropdown-item">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    <span>Sign Out</span>
+                                </button>
                             </form>
                         </ul>
                     </div>
                 </div>
             </div>
             <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content">
+            <div class="col-md-9 col-lg-10 main-content border-bottom border-3 border-dark min-vh-100">
                 @RenderBody()
             </div>
         </div>
@@ -76,9 +82,40 @@
         </div>
     </footer>
 
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+            function toggleDarkMode() {
+            const body = document.body;
+            const isDarkMode = body.classList.toggle('dark-mode');
+
+            const text = document.getElementById('darkModeText');
+            const icon = document.getElementById('darkModeIcon');
+
+            if (isDarkMode) {
+                text.textContent = 'Modo Claro';
+                icon.className = 'bi bi-sun me-2';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                text.textContent = 'Modo Oscuro';
+                icon.className = 'bi bi-moon me-2';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Cargar preferencia al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            const theme = localStorage.getItem('theme');
+
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeText').textContent = 'Modo Claro';
+                document.getElementById('darkModeIcon').className = 'bi bi-sun me-2';
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

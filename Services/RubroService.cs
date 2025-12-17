@@ -18,7 +18,7 @@ namespace PresupuestoMVC.Services
             _mapper = mapper;
         }
 
-        public async Task<RubroResponseDTO> GetByIdAsync(int id)
+        public async Task<RubroResponseDto> GetByIdAsync(int id)
         {
             var rubro = await _context.Rubros
                 .Include(r => r.tipoRubro)
@@ -27,13 +27,13 @@ namespace PresupuestoMVC.Services
             if (rubro == null)
                 throw new Exception($"Rubro con ID {id} no encontrado.");
 
-            return _mapper.Map<RubroResponseDTO>(rubro);
+            return _mapper.Map<RubroResponseDto>(rubro);
         }
 
-        public async Task<IEnumerable<RubroResponseDTO>> GetAllRubroAsync()
+        public async Task<IEnumerable<RubroResponseDto>> GetAllRubroAsync()
         {
             var rubros = await _context.Rubros.ToListAsync();
-            return _mapper.Map<IEnumerable<RubroResponseDTO>>(rubros);
+            return _mapper.Map<IEnumerable<RubroResponseDto>>(rubros);
         }
 
         public async Task<IEnumerable<RubroType>> GetAllRubroTypesAsync()
@@ -44,13 +44,13 @@ namespace PresupuestoMVC.Services
             return rubroTypes;
         }
 
-        public async Task<RubroResponseDTO> CreateAsync(CreateRubroViewRequest createDto)
+        public async Task<RubroResponseDto> CreateAsync(CreateRubroViewRequest createDto)
         {
             // Validaciones
-            var tipoExiste = await _context.RubroType.AnyAsync(rt => rt.Id == createDto.RubroTypeId);
+            var tipoExiste = await _context.RubroType.AnyAsync(rt => rt.Id == createDto.rubroTypeId);
 
             if (!tipoExiste)
-                throw new Exception($"Tipo de rubro con ID {createDto.RubroTypeId} no existe.");
+                throw new Exception($"Tipo de rubro con ID {createDto.rubroTypeId} no existe.");
 
             if (createDto.valorInicial < 0)
                 throw new Exception("El valor inicial no puede ser negativo.");
@@ -60,13 +60,17 @@ namespace PresupuestoMVC.Services
 
             var rubro = _mapper.Map<Rubro>(createDto);
 
-            var result =  _context.Rubros.Add(rubro);
+            _context.Rubros.Add(rubro);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<RubroResponseDTO>(result);
+            var result = await _context.Rubros
+                .Include(r => r.tipoRubro)
+                .FirstOrDefaultAsync(r => r.Id == rubro.Id);
+
+            return _mapper.Map<RubroResponseDto>(result);
         }
 
-        public async Task<RubroResponseDTO> UpdateAsync(int id, UpdateRubroViewRequest updateDto)
+        public async Task<RubroResponseDto> UpdateAsync(int id, UpdateRubroViewRequest updateDto)
         {
             // Validar existencia
             var existingRubro = await _context.Rubros
@@ -97,7 +101,7 @@ namespace PresupuestoMVC.Services
             var result = _context.Rubros.Update(existingRubro);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<RubroResponseDTO>(result);
+            return _mapper.Map<RubroResponseDto>(result);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -125,7 +129,7 @@ namespace PresupuestoMVC.Services
             return _mapper.Map<List<RubroType>>(tipos);
         }
 
-        public async Task<PaginacionRespuestaDto<RubroResponseDTO>> GetFiltradosAsync(FiltroRubroViewRequest filtro, int pagina, int tamañoPagina)
+        public async Task<PaginacionRespuestaDto<RubroResponseDto>> GetFiltradosAsync(FiltroRubroViewRequest filtro, int pagina, int tamañoPagina)
         {
             // Validar parámetros de paginación
             if (filtro.Pagina < 1)
@@ -168,16 +172,17 @@ namespace PresupuestoMVC.Services
 
             // Aplicar paginación
             var rubros = await query
-                .OrderBy(r => r.Anio)
+                .OrderBy(r => r.Id)
+                .ThenBy(r => r.Anio)
                 .ThenBy(r => r.Mes)
                 .ThenBy(r => r.tipoRubro.nombreRubro)
                 .Skip((pagina - 1) * tamañoPagina)
                 .Take(tamañoPagina)
                 .ToListAsync();
 
-            var respuesta = new PaginacionRespuestaDto<RubroResponseDTO>
+            var respuesta = new PaginacionRespuestaDto<RubroResponseDto>
             {
-                Datos = _mapper.Map<List<RubroResponseDTO>>(rubros),
+                Datos = _mapper.Map<List<RubroResponseDto>>(rubros),
                 PaginaActual = filtro.Pagina,
                 TamañoPagina = filtro.TamañoPagina,
                 TotalRegistros = totalRegistros
