@@ -25,11 +25,15 @@ namespace PresupuestoMVC.Controllers
                 // Años: 2025 + 5 años 2025-2030
                 var anios = Enumerable.Range(2025, 6).ToList();
 
+                var culture = new CultureInfo("es-AR");
+
                 var meses = Enumerable.Range(1, 12)
                     .Select(m => new
                     {
                         Numero = m,
-                        Nombre = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m).ToLower())
+                        Nombre = culture.TextInfo.ToTitleCase(
+                            culture.DateTimeFormat.GetMonthName(m).ToLower()
+                        )
                     })
                     .ToList();
 
