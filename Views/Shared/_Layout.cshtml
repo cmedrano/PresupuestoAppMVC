@@ -34,6 +34,11 @@
                                 <i class="fs-4 bi-file-earmark-text"></i> <span class="ms-1 d-none d-sm-inline">Gastos</span>
                             </a>
                         </li>
+                        <li>
+                            <a asp-controller="User" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User")">
+                                <i class="fs-4 bi-person"></i> <span class="ms-1 d-none d-sm-inline">Usuarios</span>
+                            </a>
+                        </li>
 
                     </ul>
                     <hr>

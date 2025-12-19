@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using PresupuestoMVC.Enums;
 using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Services.Interfaces;
 using System.Globalization;
@@ -16,11 +18,22 @@ namespace PresupuestoMVC.Controllers
         {
             try
             {
-                return View("Views/Rubros/Rubros.cshtml");
+                var users = await _userService.GetAllUsersAsync();
+
+                ViewBag.Users = users;
+                ViewBag.Roles = Enum.GetValues(typeof(UserRol))
+                     .Cast<UserRol>()
+                     .Select(r => new SelectListItem
+                     {
+                         Value = ((int)r).ToString(),
+                         Text = r.ToString()
+                     })
+                     .ToList();
+
+                return View("Views/Users/Users.cshtml");
             }
             catch (Exception ex)
             {
-                // Manejar error y redirigir a página de error
                 TempData["Error"] = "Error al cargar los datos: " + ex.Message;
                 return RedirectToAction("Error", "Home");
             }

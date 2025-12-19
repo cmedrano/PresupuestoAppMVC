@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PresupuestoMVC.Data;
+using PresupuestoMVC.Repository;
+using PresupuestoMVC.Repository.Interfaces;
 using PresupuestoMVC.Services;
+using PresupuestoMVC.Services.Interfaces;
 using System.Text;
 
 namespace PresupuestoMVC
@@ -24,6 +27,8 @@ namespace PresupuestoMVC
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<IRubroService, RubroService>();
             builder.Services.AddScoped<IGastoService, GastoService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             // AutoMapper
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
