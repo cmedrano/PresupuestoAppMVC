@@ -8,5 +8,6 @@ namespace PresupuestoMVC.Models.DTOs
         public string UserName { get; set; } = string.Empty;
         public string UserEmail { get; set; } = string.Empty;
         public UserRol Rol { get; set; } = (UserRol)2;
+        public DateTime Created { get; set; }
     }
 }

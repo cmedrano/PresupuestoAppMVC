@@ -1,7 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using PresupuestoMVC.Data;
+using PresupuestoMVC.Enums;
 using PresupuestoMVC.Models.DTOs;
+using PresupuestoMVC.Models.Entities;
+using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Repository.Interfaces;
 
 namespace PresupuestoMVC.Repository
@@ -27,6 +32,27 @@ namespace PresupuestoMVC.Repository
 
             }).ToList();
             return usersDto;
+        }
+
+        public async Task<UserResponseDTO> CreateUserAsync(User userDto)
+        {
+            var userExiste = await _context.Users
+                .AnyAsync(u => u.UserName == userDto.UserName || u.UserEmail == userDto.UserEmail);
+
+            if (userExiste)
+                throw new InvalidOperationException("El nombre de usuario o correo electrónico ya está en uso.");
+
+            _context.Users.Add(userDto);
+            await _context.SaveChangesAsync();
+            var createdUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserName == userDto.UserName);
+
+            return new UserResponseDTO
+            {
+                UserName = createdUser.UserName,
+                UserEmail = createdUser.UserEmail,
+                Created = createdUser.CreateDate
+            };
         }
     }
 }

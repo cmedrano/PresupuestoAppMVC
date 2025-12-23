@@ -93,7 +93,7 @@
                             onclick="limpiarFiltros()">
                         <i class="bi bi-arrow-clockwise"></i>Limpiar
                     </button> *@
-                    <button class="btn btn-outline-success" id="btnNuevoRubro"
+                    <button class="btn btn-outline-success" id="btnNuevoUsuario"
                             onclick="abrirModalCrear()">
                         <i class="bi bi-plus-circle"></i>Nuevo Usuario
                     </button>
@@ -245,18 +245,44 @@
             </div>
 
             <!-- Formulario -->
-            <form asp-controller="User" asp-action="Create" method="post">
+            <form asp-controller="User" asp-action="CreateUser" method="post">
                 <div class="modal-body">
 
                     <!-- Usuario -->
                     <div class="mb-3">
-                        <label for="createUser" class="form-label">Nombre de usuario</label>
+                        <label for="createUserId" class="form-label">Nombre de usuario</label>
                         <div class="input-group">
-                            <input type="string" id="createUserId" name="user"
+                            <input type="string" id="createUserId" name="userName"
                                    class="form-control"
                                    min="0"
                                    step="1"
                                    placeholder="Buki"
+                                   required />
+                        </div>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="mb-3">
+                        <label for="createPassword" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <input type="string" id="createPassword" name="password"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                                   placeholder="contraseña"
+                                   required />
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="CreateEmail" class="form-label">Email</label>
+                        <div class="input-group">
+                            <input type="string" id="CreateEmail" name="email"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                                   placeholder="email"
                                    required />
                         </div>
                     </div>
@@ -368,7 +394,7 @@
             <form asp-controller="User" asp-action="Delete" method="post">
                 <div class="modal-body">
                     <!-- Campo oculto para el ID -->
-                    <input type="hidden" id="deleteUser" name="id" />
+                    <input type="hidden" id="deleteUserId" name="id" />
 
                     <!-- Mensaje de confirmación -->
                     <div class="text-center">
@@ -381,7 +407,6 @@
                         <!-- Información del usuario a eliminar -->
                         <div class="alert alert-light mt-3 text-start" id="deleteRubroInfo">
                             <div class="row">
-                                <div class="col-6"><strong>ID:</strong> <span id="deleteUserId">-</span></div>
                                 <div class="col-6"><strong>Usuario:</strong> <span id="deleteUsernameId">-</span></div>
                                 <div class="col-6 mt-2"><strong>Rol:</strong> <span id="deleteRol">-</span></div>
                             </div>
@@ -419,6 +444,8 @@
     function abrirModalCrear() {
         // Resetear formulario
         document.getElementById('createUserId').value = '';
+        document.getElementById('createPassword').value = '';
+        document.getElementById('CreateEmail').value = '';
         document.getElementById('rolId').value = '';
 
         // Mostrar modal

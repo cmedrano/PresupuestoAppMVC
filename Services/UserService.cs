@@ -1,4 +1,8 @@
-﻿using PresupuestoMVC.Models.DTOs;
+﻿using Microsoft.AspNetCore.Identity.Data;
+using PresupuestoMVC.Helpers;
+using PresupuestoMVC.Models.DTOs;
+using PresupuestoMVC.Models.Entities;
+using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Repository.Interfaces;
 using PresupuestoMVC.Services.Interfaces;
 
@@ -16,5 +20,20 @@ namespace PresupuestoMVC.Services
         {
             return await _userRepository.GetAllUsersAsync();
         }
+
+        public async Task<UserResponseDTO> CreateUserAsync(CreateUserViewRequest userRequest)
+        {
+            var passwordHash = SecurityHelper.HashPassword(userRequest.Password);
+
+            var userDto = new User
+            {
+                UserName = userRequest.UserName,
+                UserEmail = userRequest.Email,
+                UserPasswordHash = passwordHash,
+                CreateDate = DateTime.UtcNow
+            };
+            return await _userRepository.CreateUserAsync(userDto);
+        }
+
     }
 }

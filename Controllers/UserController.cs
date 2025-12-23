@@ -39,5 +39,36 @@ namespace PresupuestoMVC.Controllers
             }
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(CreateUserViewRequest userRequest)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Datos inválidos";
+                    return RedirectToAction("Index");
+                }
+
+                var result = await _userService.CreateUserAsync(userRequest);
+                if (result != null)
+                {
+                    TempData["Success"] = "Usuario creado correctamente";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["Error"] = "Usuario no fue creado";
+                    return RedirectToAction("Index");
+                }
+            }
+
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
     }
 }
