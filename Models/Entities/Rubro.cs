@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public int RubroTypeId { get; set; } // Foreign Key
         public int valorInicial { get; set; }
+        //public int valorGastado { get; set; }
         public int Mes { get; set; }
         public int Anio { get; set; }
 

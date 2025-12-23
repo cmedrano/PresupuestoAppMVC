@@ -19,6 +19,23 @@ namespace PresupuestoMVC.Controllers
         {
             try
             {
+                bool esPrimeraCarga = !Request.QueryString.HasValue;
+                var today = DateTime.Now;
+                int? mesFiltro = null;
+                int? anioFiltro = null;
+                if (esPrimeraCarga)
+                {
+                    mesFiltro = today.Month;
+                    anioFiltro = today.Year;
+                }
+                else
+                {
+                    if (mes.HasValue && mes.Value != -1)
+                        mesFiltro = mes;
+
+                    if (anio.HasValue && anio.Value != -1)
+                        anioFiltro = anio;
+                }
                 // Cargar datos para los dropdowns
                 var rubros = await _rubroService.GetAllRubroTypesAsync();
 
@@ -40,12 +57,13 @@ namespace PresupuestoMVC.Controllers
                 // Crear filtro para el servicio
                 var filtro = new FiltroRubroViewRequest
                 {
+                    Mes = mesFiltro,
+                    Anio = anioFiltro,
                     RubroTypeId = rubroTypeId,
-                    Mes = mes,
-                    Anio = anio,
                     Pagina = pagina,
                     TamañoPagina = tamañoPagina
                 };
+
 
                 // Obtener datos paginados y filtrados
                 var resultadoPaginado = await _rubroService.GetFiltradosAsync(filtro, pagina, tamañoPagina);
@@ -56,8 +74,8 @@ namespace PresupuestoMVC.Controllers
                 ViewBag.Anios = anios;
 
                 ViewBag.FiltroRubroId = rubroTypeId;
-                ViewBag.FiltroMes = mes;
-                ViewBag.FiltroAnio = anio;
+                ViewBag.FiltroMes = mesFiltro ?? -1;
+                ViewBag.FiltroAnio = anioFiltro ?? -1;
 
                 ViewBag.Data = resultadoPaginado.Datos;
                 ViewBag.Paginacion = resultadoPaginado;
