@@ -131,8 +131,10 @@ namespace PresupuestoMVC.Services
 
         public async Task<PaginacionRespuestaDto<RubroResponseDto>> GetFiltradosAsync(FiltroRubroViewRequest filtro, int pagina, int tamañoPagina)
         {
-            // Validar parámetros de paginación
-            if (filtro.Pagina < 1)
+            try
+            {
+                // Validar parámetros de paginación
+                if (filtro.Pagina < 1)
                 throw new Exception("La página debe ser mayor a 0.");
 
             if (filtro.TamañoPagina < 1 || filtro.TamañoPagina > 100)
@@ -170,16 +172,17 @@ namespace PresupuestoMVC.Services
             // Obtener total de registros
             var totalRegistros = await query.CountAsync();
 
-            // Aplicar paginación
-            var rubros = await query
-                .OrderBy(r => r.Id)
-                .ThenBy(r => r.Anio)
-                .ThenBy(r => r.Mes)
-                .ThenBy(r => r.tipoRubro.nombreRubro)
-                .Skip((pagina - 1) * tamañoPagina)
-                .Take(tamañoPagina)
-                .ToListAsync();
-
+    
+                // Aplicar paginación
+                var rubros = await query
+                    .OrderBy(r => r.Id)
+                    .ThenBy(r => r.Anio)
+                    .ThenBy(r => r.Mes)
+                    .ThenBy(r => r.tipoRubro.nombreRubro)
+                    .Skip((pagina - 1) * tamañoPagina)
+                    .Take(tamañoPagina)
+                    .ToListAsync();
+      
             var respuesta = new PaginacionRespuestaDto<RubroResponseDto>
             {
                 Datos = _mapper.Map<List<RubroResponseDto>>(rubros),
@@ -189,6 +192,11 @@ namespace PresupuestoMVC.Services
             };
 
             return respuesta;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

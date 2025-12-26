@@ -122,13 +122,14 @@
                     <th scope="col">Rubro</th>
                     <th scope="col">Valor Inicial</th>
                     <th scope="col">Valor Gastado</th>
+                    <th scope="col">Disponible</th>
+                    <th scope="col"></th>
                     <th scope="col">Mes</th>
                     <th scope="col">Año</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
             <tbody id="rubroTableBody">
-                <!-- Los rubros se cargarán dinámicamente -->
                 @if (paginacion.Datos != null && paginacion.Datos.Any())
                 {
                     foreach (var rubro in paginacion.Datos)
@@ -138,11 +139,39 @@
                                 @rubro.tipoRubroNombre.ToString()
                             </td>
                             <td data-valorInicial="@rubro.valorInicial">
-                                @rubro.valorInicial
+                                $ @rubro.valorInicial
                             </td>
                             <td data-valorInicial="@rubro.valorGastado">
-                                @rubro.valorGastado
+                                $ @rubro.valorGastado
                             </td>
+                            <td >
+                                $ @(rubro.valorInicial - rubro.valorGastado)
+                            </td>
+                            <td style="min-width:70px;">
+                                @{
+                                    var total = rubro.valorInicial;
+                                    var gastado = rubro.valorGastado;
+                                    var disponible = total - gastado;
+
+                                    var porcentajeGastado = total > 0
+                                    ? Math.Min((gastado / total) * 100, 100)
+                                    : 0;
+
+                                    var porcentajeDisponible = 100 - porcentajeGastado;
+                                }
+
+                                <div class="progress mb-1" style="height: 16px;">
+                                    <div class="progress-bar bg-primary"
+                                         role="progressbar"
+                                         style="width:@porcentajeDisponible.ToString("0.##")%">
+                                    </div>
+                                    <div class="progress-bar bg-light"
+                                         role="progressbar"
+                                         style="width:@porcentajeGastado.ToString("0.##")%">
+                                    </div>
+                                </div>
+                            </td>
+
                             <td data-mes="@rubro.Mes">
                                 @MonthHelper.MonthName(rubro.Mes)
                             </td>
@@ -159,7 +188,7 @@
                                         '@rubro.Mes',
                                         '@rubro.Anio'
                                     )">
-                                    <i class="bi bi-pencil-square"></i> Editar
+                                    <i class="bi bi-pencil-square"></i>
                                 </button>
                                 <button class="btn btn-sm btn-danger btn-eliminar-rubro" 
                                     onclick="abrirModalEliminar(
@@ -170,7 +199,7 @@
                                         '@rubro.Mes',
                                         '@rubro.Anio'
                                     )">
-                                    <i class="bi bi-trash"></i> Eliminar
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -393,7 +422,10 @@
                             {
                                 foreach (var mes in ViewBag.Meses)
                                 {
-                                    <option value="@mes.Numero">@mes.Nombre</option>
+                                    <option value="@mes.Numero"
+                                            selected="@(ViewBag.FiltroMes?.ToString() == mes.Numero.ToString())">
+                                        @mes.Nombre
+                                    </option>
                                 }
                             }
                         </select>
