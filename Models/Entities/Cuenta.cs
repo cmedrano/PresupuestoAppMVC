@@ -4,5 +4,7 @@
     {
         public int Id { get; set; }
         public string nombreCuenta { get; set; }
+        public decimal SaldoInicial { get; set; }
+        public decimal SaldoActual { get; set; }
     }
 }

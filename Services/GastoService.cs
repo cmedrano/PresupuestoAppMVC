@@ -58,9 +58,21 @@ namespace PresupuestoMVC.Services
 
             try
             {
+
+                var cuenta = await _context.Cuentas
+                    .FirstOrDefaultAsync(c => c.Id == createDto.CuentaId);
+
+                if (cuenta == null)
+                    throw new Exception("Cuenta no encontrada");
+
+                if (cuenta.SaldoActual < createDto.Monto)
+                    throw new Exception("Saldo insuficiente");
+
                 var gasto = _mapper.Map<Gasto>(createDto);
 
                 _context.Gastos.Add(gasto);
+
+                cuenta.SaldoActual -= createDto.Monto;
 
                 var fecha = createDto.Fecha;
                 int mes = fecha.Month;

@@ -141,7 +141,7 @@
                             <td data-valorInicial="@rubro.valorInicial">
                                 $ @rubro.valorInicial
                             </td>
-                            <td data-valorInicial="@rubro.valorGastado">
+                            <td data-valorGastado="@rubro.valorGastado">
                                 $ @rubro.valorGastado
                             </td>
                             <td >
@@ -160,7 +160,7 @@
                                     var porcentajeDisponible = 100 - porcentajeGastado;
                                 }
 
-                                <div class="progress mb-1" style="height: 16px;">
+                                <div class="progress border border-secondary mb-1" style="height: 16px;">
                                     <div class="progress-bar bg-primary"
                                          role="progressbar"
                                          style="width:@porcentajeDisponible.ToString("0.##")%">

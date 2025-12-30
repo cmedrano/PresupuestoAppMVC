@@ -29,6 +29,8 @@ namespace PresupuestoMVC
             builder.Services.AddScoped<IGastoService, GastoService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
             // AutoMapper
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
