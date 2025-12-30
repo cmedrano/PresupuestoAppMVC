@@ -8,7 +8,7 @@
     var rubros = ViewBag.Rubros as IEnumerable<RubroType>;
     var meses = ViewBag.Meses as IEnumerable<int>;
     var anios = ViewBag.Anios as IEnumerable<int>;
-    var paginacion = ViewBag.Paginacion as PaginacionRespuestaDto<RubroResponseDto>;
+    var paginacion = ViewBag.Paginacion as PaginacionRespuestaDto<BudgetResponseDTO>;
 
     int totalPaginas = (int)Math.Ceiling((double)paginacion.TotalRegistros / ViewBag.TamañoPagina);
     int inicio = Math.Max(1, ViewBag.PaginaActual - 2);
@@ -21,9 +21,9 @@
             <div class="col-md-8">
                 <h1 class="display-5 fw-bold">
                     <i class="bi bi-cash-stack me-3"></i>
-                    Rubros
+                    Presupuesto
                 </h1>
-                <p class="lead mb-0">Sistema de control y seguimiento de rubro - OCA Argentina</p>
+                <p class="lead mb-0">Sistema de control Presupuesto</p>
             </div>
         </div>
     </div>
@@ -98,7 +98,7 @@
                     </button>
                     <button class="btn btn-outline-success" id="btnNuevoRubro"
                             onclick="abrirModalCrear()">
-                        <i class="bi bi-plus-circle"></i>Nuevo Rubro
+                        <i class="bi bi-plus-circle"></i>Nuevo Presupuesto
                     </button>
                 </div>
             </div>
@@ -565,7 +565,7 @@
     }
 
     function limpiarFiltros() {
-        window.location.href = '@Url.Action("Index", "Rubro")';
+        window.location.href = '@Url.Action("Index", "Budget")';
     }
 
     function aplicarFiltros() {
@@ -575,7 +575,7 @@
 
 
         // Construir URL con parámetros
-        let url = '@Url.Action("Index", "Rubro")';
+        let url = '@Url.Action("Index", "Budget")';
         const params = new URLSearchParams();
 
         if (rubroId) params.append('rubroTypeId', rubroId);

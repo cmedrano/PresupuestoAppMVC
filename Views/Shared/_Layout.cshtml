@@ -24,14 +24,19 @@
                             </a>
                         </li>
                         <li>
-                            <a asp-controller="Rubro" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Rubro")">
+                            <a asp-controller="Budget" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Budget")">
                                  <i class="bi bi-cash-stack fs-4"></i>
-                                <span class="ms-1 d-none d-sm-inline">Rubros</span>
+                                <span class="ms-1 d-none d-sm-inline">Presupuesto</span>
                             </a>
                         </li>
                         <li>
                             <a asp-controller="Gasto" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Gasto")">
                                 <i class="fs-4 bi-file-earmark-text"></i> <span class="ms-1 d-none d-sm-inline">Gastos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Category" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category")">
+                                <i class="fs-4 bi-file-earmark-text"></i> <span class="ms-1 d-none d-sm-inline">Rubros</span>
                             </a>
                         </li>
                         <li>

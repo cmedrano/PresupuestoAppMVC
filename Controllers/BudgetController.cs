@@ -1,18 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PresupuestoMVC.Models.Entities;
 using PresupuestoMVC.Models.ViewModels;
-using PresupuestoMVC.Services;
+using PresupuestoMVC.Services.Interfaces;
 using System.Globalization;
 
 namespace PresupuestoMVC.Controllers
 {
-    public class RubroController : Controller
+    public class BudgetController : Controller
     {
-        private readonly IRubroService _rubroService;
+        private readonly IBudgetService _budgetService;
+        private readonly ICategoryService _categoryService;
 
-        public RubroController(IRubroService rubroService)
+        public BudgetController(IBudgetService budgetService, ICategoryService categoryService)
         {
-            _rubroService = rubroService;
+            _budgetService = budgetService;
+            _categoryService = categoryService;
         }
 
         public async Task<IActionResult> Index(int? rubroTypeId = null, int? mes = null, int? anio = null, int pagina = 1, int tamañoPagina = 10)
@@ -37,7 +39,7 @@ namespace PresupuestoMVC.Controllers
                         anioFiltro = anio;
                 }
                 // Cargar datos para los dropdowns
-                var rubros = await _rubroService.GetAllRubroTypesAsync();
+                var rubros = await _categoryService.GetAllCategoriesAsync();
 
                 // Años: 2025 + 5 años 2025-2030
                 var anios = Enumerable.Range(2025, 6).ToList();
@@ -55,7 +57,7 @@ namespace PresupuestoMVC.Controllers
                     .ToList();
 
                 // Crear filtro para el servicio
-                var filtro = new FiltroRubroViewRequest
+                var filtro = new FiltroBudgetViewRequest
                 {
                     Mes = mesFiltro,
                     Anio = anioFiltro,
@@ -66,7 +68,7 @@ namespace PresupuestoMVC.Controllers
 
 
                 // Obtener datos paginados y filtrados
-                var resultadoPaginado = await _rubroService.GetFiltradosAsync(filtro, pagina, tamañoPagina);
+                var resultadoPaginado = await _budgetService.GetFiltradosAsync(filtro, pagina, tamañoPagina);
 
                 // Pasar datos a la vista
                 ViewBag.Rubros = rubros;
@@ -82,11 +84,10 @@ namespace PresupuestoMVC.Controllers
                 ViewBag.PaginaActual = pagina;
                 ViewBag.TamañoPagina = tamañoPagina;
 
-                return View("Views/Rubros/Rubros.cshtml");
+                return View("Views/Budget/Budget.cshtml");
             }
             catch (Exception ex)
             {
-                // Manejar error y redirigir a página de error
                 TempData["Error"] = "Error al cargar los datos: " + ex.Message;
                 return RedirectToAction("Error", "Home");
             }
@@ -95,7 +96,7 @@ namespace PresupuestoMVC.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int Id, UpdateRubroViewRequest model)
+        public async Task<IActionResult> Edit(int Id, UpdateBudgetViewRequest model)
         {
             try
             {
@@ -105,7 +106,7 @@ namespace PresupuestoMVC.Controllers
                     return RedirectToAction("Index");
                 }
 
-                await _rubroService.UpdateAsync(Id, model);
+                await _budgetService.UpdateAsync(Id, model);
 
                 TempData["Success"] = "Rubro actualizado correctamente";
                 return RedirectToAction("Index");
@@ -118,7 +119,7 @@ namespace PresupuestoMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateRubroViewRequest model)
+        public async Task<IActionResult> Create(CreateBudgetViewRequest model)
         {
             try
             {
@@ -128,7 +129,7 @@ namespace PresupuestoMVC.Controllers
                     return RedirectToAction("Index");
                 }
 
-                await _rubroService.CreateAsync(model);
+                await _budgetService.CreateAsync(model);
 
                 TempData["Success"] = "Rubro creado correctamente";
                 return RedirectToAction("Index");
@@ -151,7 +152,7 @@ namespace PresupuestoMVC.Controllers
                     return RedirectToAction("Index");
                 }
 
-                await _rubroService.DeleteAsync(id);
+                await _budgetService.DeleteAsync(id);
 
                 TempData["Success"] = "Rubro eliminado correctamente";
                 return RedirectToAction("Index");

@@ -1,6 +1,6 @@
 ﻿namespace PresupuestoMVC.Models.Entities
 {
-    public class Rubro
+    public class Budget
     {
         public int Id { get; set; }
         public int RubroTypeId { get; set; } // Foreign Key

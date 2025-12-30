@@ -13,12 +13,12 @@ namespace PresupuestoMVC.Data
             CreateMap<LoginResponseDto, User>().ReverseMap();
 
             // Rubro
-            CreateMap<Rubro, RubroResponseDto>()
+            CreateMap<Budget, BudgetResponseDTO>()
                     // Mapear el ID del tipo de rubro
                     .ForMember(dest => dest.RubroTypeId, opt => opt.MapFrom(src => src.RubroTypeId))
                     .ForMember(dest => dest.tipoRubroNombre, opt => opt.MapFrom(src => src.tipoRubro.nombreRubro));
-            CreateMap<CreateRubroViewRequest, Rubro>();
-            CreateMap<UpdateRubroViewRequest, Rubro>();
+            CreateMap<CreateBudgetViewRequest, Budget>();
+            CreateMap<UpdateBudgetViewRequest, Budget>();
 
             // Gasto
             CreateMap<Gasto, GastoResponseDto>()

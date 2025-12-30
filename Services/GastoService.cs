@@ -78,7 +78,7 @@ namespace PresupuestoMVC.Services
                 int mes = fecha.Month;
                 int anio = fecha.Year;
 
-                var rubro = await _context.Rubros.FirstOrDefaultAsync(r =>
+                var rubro = await _context.Budget.FirstOrDefaultAsync(r =>
                     r.Id == createDto.RubroTypeId &&
                     r.Mes == mes &&
                     r.Anio == anio
@@ -117,7 +117,7 @@ namespace PresupuestoMVC.Services
             if (existingGasto == null)
                 throw new Exception($"Gasto con ID {id} no encontrado.");
 
-            var existeRubro = await _context.Rubros.AnyAsync(r => r.Id == updateDto.RubroTypeId);
+            var existeRubro = await _context.Budget.AnyAsync(r => r.Id == updateDto.RubroTypeId);
             if (!existeRubro)
                 throw new Exception($"Rubro con ID {updateDto.RubroTypeId} no existe.");
 

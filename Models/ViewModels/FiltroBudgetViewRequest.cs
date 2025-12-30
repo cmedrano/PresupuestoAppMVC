@@ -1,6 +1,6 @@
 ﻿namespace PresupuestoMVC.Models.ViewModels
 {
-    public class FiltroRubroViewRequest
+    public class FiltroBudgetViewRequest
     {
         public int? RubroTypeId { get; set; }
         public int? Mes { get; set; }
