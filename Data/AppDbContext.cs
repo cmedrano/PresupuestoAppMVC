@@ -16,5 +16,16 @@ namespace PresupuestoMVC.Data
         public DbSet<RubroType> RubroType { get; set; }
         public DbSet<Gasto> Gastos { get; set; }
         public DbSet<Cuenta> Cuentas { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder); 
+
+            modelBuilder.Entity<RubroType>()
+                .HasOne(r => r.RubroPadre)
+                .WithMany(r => r.SubRubros)
+                .HasForeignKey(r => r.RubroPadreId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

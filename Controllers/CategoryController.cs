@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PresupuestoMVC.Models.ViewModels;
+using PresupuestoMVC.Services;
 using PresupuestoMVC.Services.Interfaces;
 
 namespace PresupuestoMVC.Controllers
@@ -23,6 +25,40 @@ namespace PresupuestoMVC.Controllers
             {
                 TempData["Error"] = "Error al cargar los datos: " + ex.Message;
                 return RedirectToAction("Error", "Home");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCategory(CreateCategoryViewRequest model)
+        {
+            try
+            {
+                await _categoryService.CreateAsync(model);
+
+                TempData["Success"] = "Rubro creado correctamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteCategory(DeleteCategoryViewRequest model)
+        {
+            try
+            {
+                //await _categoryService.CreateAsync(model);
+
+                TempData["Success"] = "Rubro creado correctamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
             }
         }
     }
