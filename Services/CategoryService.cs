@@ -21,10 +21,14 @@ namespace PresupuestoMVC.Services
         }
         public async Task<CategoryResponseDto> CreateAsync(CreateCategoryViewRequest CreateDto)
         {
+            int? rubroPadreId = CreateDto.RubroPadreId == 0
+                                ? null
+                                : CreateDto.RubroPadreId;
+
             var CategoryDto = new RubroType
             {
                 nombreRubro = CreateDto.Rubro ?? CreateDto.SubCategory,
-                RubroPadreId = CreateDto.RubroPadreId,
+                RubroPadreId = rubroPadreId,
             };
             return await _categoryRepository.CreateAsync(CategoryDto);
         }
