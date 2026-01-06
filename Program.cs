@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PresupuestoMVC.Data;
+using PresupuestoMVC.Repository;
+using PresupuestoMVC.Repository.Interfaces;
 using PresupuestoMVC.Services;
+using PresupuestoMVC.Services.Interfaces;
 using System.Text;
 
 namespace PresupuestoMVC
@@ -22,8 +25,14 @@ namespace PresupuestoMVC
 
             // Registro del servicios
             builder.Services.AddScoped<ILoginService, LoginService>();
-            builder.Services.AddScoped<IRubroService, RubroService>();
+            builder.Services.AddScoped<IBudgetService, BudgetService>();
             builder.Services.AddScoped<IGastoService, GastoService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             // AutoMapper
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));

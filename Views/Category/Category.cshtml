@@ -1,0 +1,524 @@
+﻿@using PresupuestoMVC.Models.Entities
+@using PresupuestoMVC.Models.DTOs
+@using PresupuestoMVC.Enums;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var categories = ViewBag.Categories as IEnumerable<CategoryResponseDto>;
+}
+<!-- Header -->
+<header class="oca-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold">
+                    <i class="bi bi-cash-stack me-3"></i>
+                    Rubros
+                </h1>
+                <p class="lead mb-0">Sistema de control de Rubros</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Filtros -->
+    <section class="filter-section">
+        <div class="row align-items-end">
+
+            @*             <div class="col-md-3">
+            <label for="rubroFilter" class="form-label fw-semibold">
+            <i class="bi bi-tags me-1"></i>Filtrar por rol de usuario
+            </label>
+            <select class="form-select" id="rubroFilter">
+            <option value="">Todos los Roles</option>
+            @foreach (var rol in roles)
+            {
+            <option value="@rol.Value">
+            @rol.Text
+            </option>
+            }
+            </select>
+            </div> *@
+            @*
+            <div class="col-md-3">
+            <label for="mesFilter" class="form-label fw-semibold">
+            <i class="bi bi-wallet2 me-1"></i>Filtrar por Meses
+            </label>
+            <select class="form-select" id="mesFilter">
+            <option value="">Todos los Meses</option>
+            @foreach (var mesItem in ViewBag.Meses)
+            {
+            <option value="@mesItem.Numero"
+            selected="@(ViewBag.FiltroMes?.ToString() == mesItem.Numero.ToString())">
+            @mesItem.Nombre
+            </option>
+            }
+            </select>
+            </div>  *@
+
+            @*              <div class="col-md-2">
+            <label for="aniosFilter" class="form-label fw-semibold">
+            <i class="bi bi-wallet2 me-1"></i>Filtrar por Años
+            </label>
+            <select class="form-select" id="aniosFilter">
+            <option value="">Todos los Años</option>
+            @foreach (var anio in ViewBag.Anios)
+            {
+            <option value="@anio"
+            selected="@(ViewBag.FiltroAnio?.ToString() == anio.ToString())">
+            @anio
+            </option>
+            }
+            </select>
+            </div>  *@
+
+            <div class="col-md-4">
+                <div class="d-flex gap-2 align-items-end">
+                    @*                     <button class="btn btn-outline-primary" id="btnAplicarFiltros"
+                    onclick="aplicarFiltros()">
+                    <i class="bi bi-funnel"></i>Aplicar Filtros
+                    </button>
+                    <button class="btn btn-outline-secondary" id="btnLimpiarFiltros"
+                    onclick="limpiarFiltros()">
+                    <i class="bi bi-arrow-clockwise"></i>Limpiar
+                    </button> *@
+                    <button class="btn btn-outline-success" id="btnNuevoRubro"
+                            onclick="abrirModalCrear('',false)">
+                        <i class="bi bi-plus-circle"></i>Nuevo Rubro
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Grilla de Rubros -->
+    <div class="table-responsive">
+        <table class="table  table-hover table-oca">
+            <thead>
+                <tr>
+                    <th>Rubro</th>
+                    <th class="text-end pe-3">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var category in categories)
+                {
+                    var collapseId = $"subrubros-{category.Id}";
+
+                    <!-- Rubro padre -->
+                    <tr class="rubro-row">
+                        <td >
+                            @if (category.SubCategories.Any())
+                            {
+                                <button class="btn btn-sm btn-link p-0 me-2"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#@collapseId"
+                                        aria-expanded="false">
+                                    <i class="bi bi-caret-right-fill"></i>
+                                </button>
+                            }
+
+                            <strong>@category.nombreRubro</strong>
+                        </td>
+                        <td class="text-end pe-3">
+                            <button class="btn btn-outline-success" id="btnNuevoSubRubro"
+                                    onclick="abrirModalCrear(@category.Id, true)">
+                                <i class="bi bi-plus-circle"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger"
+                                    onclick="abrirModalEliminar('@category.Id', '@category.nombreRubro')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Subrubros -->
+                    @if (category.SubCategories.Any())
+                    {
+                        <tr class="collapse subrubro-row" id="@collapseId">
+                            <td colspan="2" class="p-0">
+                                <table class="table mb-0 table-sm">
+                                    <tbody>
+                                        @foreach (var sub in category.SubCategories)
+                                        {
+                                            <tr>
+                                                <td class="ps-5">
+                                                    <i class="bi bi-arrow-return-right me-2 text-muted"></i>
+                                                    @sub.nombreRubro
+                                                </td>
+                                                <td class="text-end pe-3">
+                                                    <button class="btn btn-sm btn-danger"
+                                                            onclick="abrirModalEliminar('@sub.Id', '@sub.nombreRubro')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Paginación -->
+    @*     <nav aria-label="Paginación de rubro">
+    <ul class="pagination justify-content-center">
+    <!-- Botón Anterior -->
+    <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+    @if (ViewBag.PaginaActual > 1)
+    {
+    <a class="page-link"
+    href="@Url.Action("Index", new {
+    rubroTypeId = ViewBag.FiltroRubroId,
+    meses = ViewBag.FiltroMes,
+    anio = ViewBag.FiltroAnio,
+    pagina = ViewBag.PaginaActual - 1,
+    tamañoPagina = ViewBag.TamañoPagina
+    })">
+    Anterior
+    </a>
+    }
+    else
+    {
+    <span class="page-link">Anterior</span>
+    }
+    </li>
+
+    @for (int i = inicio; i <= fin; i++)
+    {
+    <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+    <a class="page-link"
+    href="@Url.Action("Index", new {
+    rubroTypeId = ViewBag.FiltroRubroId,
+    meses = ViewBag.FiltroMes,
+    anio = ViewBag.FiltroAnio,
+    pagina = i,
+    tamañoPagina = ViewBag.TamañoPagina
+    })">
+    @i
+    </a>
+    </li>
+    }
+    <!-- Botón Siguiente -->
+    <li class="page-item @(ViewBag.PaginaActual >= totalPaginas ? "disabled" : "")">
+    @if (ViewBag.PaginaActual < totalPaginas)
+    {
+    <a class="page-link"
+    href="@Url.Action("Index", new {
+    rubroTypeId = ViewBag.FiltroRubroId,
+    meses = ViewBag.FiltroMes,
+    anio = ViewBag.FiltroAnio,
+    pagina = ViewBag.PaginaActual + 1,
+    tamañoPagina = ViewBag.TamañoPagina
+    })">
+    Siguiente
+    </a>
+    }
+    else
+    {
+    <span class="page-link">Siguiente</span>
+    }
+    </li>
+    </ul>
+    </nav> *@
+</div>
+
+<!-- Modal de Creación -->
+<div class="modal fade" id="modalCrear" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-success">
+            <!-- Header verde -->
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Rubro
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Formulario -->
+            <form asp-controller="Category" asp-action="CreateCategory" method="post">
+                <div class="modal-body">
+
+                    <!-- Rubro -->
+                    <div class="mb-3">
+                        <label for="createCategory" class="form-label">Rubro</label>
+                        <div class="input-group">
+                            <input type="string" id="createCategory" name="Rubro"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                                   placeholder="ej.: Seguridad"
+                                   required />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i>Crear Rubro
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Creación SubCategory-->
+<div class="modal fade" id="modalCrearSubCategory" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-success">
+            <!-- Header verde -->
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Sub Rubro
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Formulario -->
+            <form asp-controller="Category" asp-action="CreateCategory" method="post">
+                <div class="modal-body">
+
+                    <!-- Rubro -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <input type="hidden" id="categoryId" name="RubroPadreId"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                        </div>
+                    </div>
+
+                    <!-- SubRubro -->
+                    <div class="mb-3">
+                        <label for="createSubCategory" class="form-label">Sub Rubro</label>
+                        <div class="input-group">
+                            <input type="string" id="createSubCategory" name="SubCategory"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                                   placeholder="ej.: Informatica"
+                                   required />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i>Crear Sub Rubro
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Edición -->
+@* <div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form asp-controller="User" asp-action="Edit" method="post">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square me-2"></i>Editar Usuario
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Campo oculto para el ID -->
+                    <input type="hidden" id="editUserId" name="Id" value="" />
+
+                    <!-- Cuenta -->
+                    <div class="mb-3">
+                        <label for="editUsernameId" class="form-label">Nombre de usuario</label>
+                        <div class="input-group">
+                            <input type="string" id="editUsernameId" name="Username"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                                   placeholder="Ryoma"
+                                   required />
+                        </div>
+                    </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> *@
+
+<!-- Modal de Eliminación -->
+<div class="modal fade" id="modalEliminar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <!-- Header rojo -->
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Formulario -->
+            <form asp-controller="Category" asp-action="DeleteCategory" method="delete">
+                <div class="modal-body">
+                    <!-- Campo oculto para el ID -->
+                    <input type="hidden" id="deleteCategoryId" name="Id" />
+
+                    <!-- Mensaje de confirmación -->
+                    <div class="text-center">
+                        <i class="bi bi-trash text-danger" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">¿Estás seguro de eliminar el rubro/sub rubro?</h5>
+                        <p class="text-muted">
+                            Esta acción no se puede deshacer. El rubro y/o sub rubro será eliminado permanentemente.
+                        </p>
+
+                        <!-- Información del rubro a eliminar -->
+                        <div class="alert alert-light mt-3 text-start" id="deleteCategoryInfo">
+                            <div class="row">
+                                <div class="col-6"><strong>id:</strong> <span id="deleteCategory">-</span></div>
+                                <div class="col-6"><strong>Rubro:</strong> <span id="deleteCategoryName">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Sí, Eliminar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+ <script>
+    // function abrirModalEditar(id, user, rol) {
+    //     // Llenar formulario
+    //     document.getElementById('editUserId').value = id;
+    //     document.getElementById('editUsernameId').value = user;
+    //     document.getElementById('editRolId').value = rol;
+
+    //     // Mostrar modal
+    //     const modal = new bootstrap.Modal(document.getElementById('modalEditar'));
+    //     modal.show();
+    // }
+
+    function abrirModalCrear(id, subCategory) {
+        if (subCategory) {
+            document.getElementById('categoryId').value = id;
+            document.getElementById('createSubCategory').value = '';
+
+            const modal = new bootstrap.Modal(document.getElementById('modalCrearSubCategory'));
+            modal.show();
+        }else{
+            document.getElementById('createCategory').value = '';
+
+            const modal = new bootstrap.Modal(document.getElementById('modalCrear'));
+            modal.show();
+        }
+    }
+
+    function abrirModalEliminar(id, subCategory) {
+        document.getElementById('deleteCategoryId').value = id;
+        document.getElementById('deleteCategoryName').innerText = subCategory;
+        document.getElementById('deleteCategory').innerText = id;
+
+        const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+        modal.show();
+    }
+
+    // function limpiarFiltros() {
+    //     window.location.href = '@Url.Action("Index", "Rubro")';
+    // }
+
+    // function aplicarFiltros() {
+    //     const rubroId = document.getElementById('rubroFilter').value;
+    //     const mes = document.getElementById('mesFilter').value;
+    //     const anio = document.getElementById('aniosFilter').value;
+
+
+    //     // Construir URL con parámetros
+    //     let url = '@Url.Action("Index", "Rubro")';
+    //     const params = new URLSearchParams();
+
+    //     if (rubroId) params.append('rubroTypeId', rubroId);
+    //     if (mes) params.append('mes', mes);
+    //     if (anio) params.append('anio', anio);
+
+
+    //     // Mantener página actual
+    //     params.append('pagina', 1);
+    //     params.append('tamañoPagina', @ViewBag.TamañoPagina);
+
+    //     if (params.toString()) {
+    //         url += '?' + params.toString();
+    //     }
+
+    //     window.location.href = url;
+    // }
+
+@*     document.addEventListener("click", function (e) {
+        if (e.target.closest("[data-bs-toggle='collapse']")) {
+            const icon = e.target.closest("button").querySelector("i");
+            icon.classList.toggle("bi-caret-right-fill");
+            icon.classList.toggle("bi-caret-down-fill");
+        }
+    }); *@
+
+ </script>
+
+ <style>
+
+/*     .rubro-row {
+        background-color: #f1f3f5; 
+        font-weight: 500;
+    }
+
+    .subrubro-row {
+        background-color: #ffffff;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #e9ecef;
+    } */
+
+  </style>

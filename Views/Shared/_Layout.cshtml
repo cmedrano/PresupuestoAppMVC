@@ -24,14 +24,29 @@
                             </a>
                         </li>
                         <li>
-                            <a asp-controller="Rubro" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Rubro")">
+                            <a asp-controller="Budget" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Budget")">
                                  <i class="bi bi-cash-stack fs-4"></i>
-                                <span class="ms-1 d-none d-sm-inline">Rubros</span>
+                                <span class="ms-1 d-none d-sm-inline">Presupuesto</span>
                             </a>
                         </li>
                         <li>
                             <a asp-controller="Gasto" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Gasto")">
                                 <i class="fs-4 bi-file-earmark-text"></i> <span class="ms-1 d-none d-sm-inline">Gastos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Category" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category")">
+                                <i class="fs-4 bi-file-earmark-text"></i> <span class="ms-1 d-none d-sm-inline">Rubros</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Account" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Account")">
+                                <i class="fs-4 bi-building"></i> <span class="ms-1 d-none d-sm-inline">Cuentas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="User" asp-action="Index" class="nav-link px-0 align-middle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User")">
+                                <i class="fs-4 bi-person"></i> <span class="ms-1 d-none d-sm-inline">Usuarios</span>
                             </a>
                         </li>
 
@@ -40,13 +55,13 @@
                     <div class="dropdown pb-4 mt-auto">
                         <a href="#" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle fs-3 me-2 sidebar-type-color"></i>
-                            <span class="d-none d-sm-inline mx-1 sidebar-type-color">My Account</span>
+                            <span class="d-none d-sm-inline mx-1 sidebar-type-color">Mi Cuenta</span>
                         </a>
                         <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser1">
                             <li>
                                 <button class="dropdown-item">
                                     <i class="bi bi-gear-fill me-2"></i>
-                                    <span>Settings</span>
+                                    <span>Configuracion</span>
                                 </button>
                             </li>
                             <li>
@@ -61,7 +76,7 @@
                             <form asp-controller="Login" asp-action="Logout" method="post" class="d-inline">
                                 <button type="submit" class="dropdown-item">
                                     <i class="bi bi-box-arrow-right me-2"></i>
-                                    <span>Sign Out</span>
+                                    <span>Cerrar Sesión</span>
                                 </button>
                             </form>
                         </ul>

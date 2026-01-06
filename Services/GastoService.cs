@@ -54,17 +54,56 @@ namespace PresupuestoMVC.Services
             if (!existeCuenta)
                 throw new Exception($"Cuenta con ID {createDto.CuentaId} no existe.");
 
-            var gasto = _mapper.Map<Gasto>(createDto);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            _context.Gastos.Add(gasto);
-            await _context.SaveChangesAsync();
+            try
+            {
 
-            var result = await _context.Gastos
-                .Include(g => g.RubroType)
-                .Include(g => g.Cuenta)
-                .FirstOrDefaultAsync(g => g.Id == gasto.Id);
+                var cuenta = await _context.Cuentas
+                    .FirstOrDefaultAsync(c => c.Id == createDto.CuentaId);
 
-            return _mapper.Map<GastoResponseDto>(result);
+                if (cuenta == null)
+                    throw new Exception("Cuenta no encontrada");
+
+                if (cuenta.SaldoActual < createDto.Monto)
+                    throw new Exception("Saldo insuficiente");
+
+                var gasto = _mapper.Map<Gasto>(createDto);
+
+                _context.Gastos.Add(gasto);
+
+                cuenta.SaldoActual -= createDto.Monto;
+
+                var fecha = createDto.Fecha;
+                int mes = fecha.Month;
+                int anio = fecha.Year;
+
+                var rubro = await _context.Budget.FirstOrDefaultAsync(r =>
+                    r.Id == createDto.RubroTypeId &&
+                    r.Mes == mes &&
+                    r.Anio == anio
+                );
+
+                if (rubro == null)
+                    throw new Exception("No existe un rubro para el mes/año del gasto");
+
+                rubro.ValorGastado += createDto.Monto;
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                var result = await _context.Gastos
+                    .Include(g => g.RubroType)
+                    .Include(g => g.Cuenta)
+                    .FirstOrDefaultAsync(g => g.Id == gasto.Id);
+
+                return _mapper.Map<GastoResponseDto>(result);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<GastoResponseDto> UpdateAsync(int id, UpdateGastoViewRequest updateDto)
@@ -78,7 +117,7 @@ namespace PresupuestoMVC.Services
             if (existingGasto == null)
                 throw new Exception($"Gasto con ID {id} no encontrado.");
 
-            var existeRubro = await _context.Rubros.AnyAsync(r => r.Id == updateDto.RubroTypeId);
+            var existeRubro = await _context.Budget.AnyAsync(r => r.Id == updateDto.RubroTypeId);
             if (!existeRubro)
                 throw new Exception($"Rubro con ID {updateDto.RubroTypeId} no existe.");
 

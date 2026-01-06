@@ -1,5 +1,6 @@
 ﻿@using PresupuestoMVC.Models.DTOs
 @using PresupuestoMVC.Models.Entities
+@using PresupuestoMVC.Helpers
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -7,7 +8,7 @@
     var rubros = ViewBag.Rubros as IEnumerable<RubroType>;
     var meses = ViewBag.Meses as IEnumerable<int>;
     var anios = ViewBag.Anios as IEnumerable<int>;
-    var paginacion = ViewBag.Paginacion as PaginacionRespuestaDto<RubroResponseDto>;
+    var paginacion = ViewBag.Paginacion as PaginacionRespuestaDto<BudgetResponseDTO>;
 
     int totalPaginas = (int)Math.Ceiling((double)paginacion.TotalRegistros / ViewBag.TamañoPagina);
     int inicio = Math.Max(1, ViewBag.PaginaActual - 2);
@@ -20,9 +21,9 @@
             <div class="col-md-8">
                 <h1 class="display-5 fw-bold">
                     <i class="bi bi-cash-stack me-3"></i>
-                    Sección de Rubro
+                    Presupuesto
                 </h1>
-                <p class="lead mb-0">Sistema de control y seguimiento de rubro - OCA Argentina</p>
+                <p class="lead mb-0">Sistema de control Presupuesto</p>
             </div>
         </div>
     </div>
@@ -97,7 +98,7 @@
                     </button>
                     <button class="btn btn-outline-success" id="btnNuevoRubro"
                             onclick="abrirModalCrear()">
-                        <i class="bi bi-plus-circle"></i>Nuevo Rubro
+                        <i class="bi bi-plus-circle"></i>Nuevo Presupuesto
                     </button>
                 </div>
             </div>
@@ -118,30 +119,61 @@
         <table class="table table-striped table-hover table-oca">
             <thead>
                 <tr>
-                    <th scope="col">ID</th>
                     <th scope="col">Rubro</th>
                     <th scope="col">Valor Inicial</th>
+                    <th scope="col">Valor Gastado</th>
+                    <th scope="col">Disponible</th>
+                    <th scope="col"></th>
                     <th scope="col">Mes</th>
                     <th scope="col">Año</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
             <tbody id="rubroTableBody">
-                <!-- Los rubros se cargarán dinámicamente -->
                 @if (paginacion.Datos != null && paginacion.Datos.Any())
                 {
                     foreach (var rubro in paginacion.Datos)
                     {
                         <tr>
-                            <td>@rubro.Id</td>
                             <td data-rubroTypeId="@rubro.tipoRubroNombre.ToString()">
                                 @rubro.tipoRubroNombre.ToString()
                             </td>
                             <td data-valorInicial="@rubro.valorInicial">
-                                @rubro.valorInicial
+                                $ @rubro.valorInicial
                             </td>
+                            <td data-valorGastado="@rubro.valorGastado">
+                                $ @rubro.valorGastado
+                            </td>
+                            <td >
+                                $ @(rubro.valorInicial - rubro.valorGastado)
+                            </td>
+                            <td style="min-width:70px;">
+                                @{
+                                    var total = rubro.valorInicial;
+                                    var gastado = rubro.valorGastado;
+                                    var disponible = total - gastado;
+
+                                    var porcentajeGastado = total > 0
+                                    ? Math.Min((gastado / total) * 100, 100)
+                                    : 0;
+
+                                    var porcentajeDisponible = 100 - porcentajeGastado;
+                                }
+
+                                <div class="progress border border-secondary mb-1" style="height: 16px;">
+                                    <div class="progress-bar bg-primary"
+                                         role="progressbar"
+                                         style="width:@porcentajeDisponible.ToString("0.##")%">
+                                    </div>
+                                    <div class="progress-bar bg-light"
+                                         role="progressbar"
+                                         style="width:@porcentajeGastado.ToString("0.##")%">
+                                    </div>
+                                </div>
+                            </td>
+
                             <td data-mes="@rubro.Mes">
-                                @rubro.Mes
+                                @MonthHelper.MonthName(rubro.Mes)
                             </td>
                             <td data-anio="@rubro.Anio">
                                 @rubro.Anio
@@ -152,20 +184,22 @@
                                         '@rubro.Id', 
                                         '@rubro.RubroTypeId',
                                         '@rubro.valorInicial',
+                                        '@rubro.valorGastado',
                                         '@rubro.Mes',
                                         '@rubro.Anio'
                                     )">
-                                    <i class="bi bi-pencil-square"></i> Editar
+                                    <i class="bi bi-pencil-square"></i>
                                 </button>
                                 <button class="btn btn-sm btn-danger btn-eliminar-rubro" 
                                     onclick="abrirModalEliminar(
                                         '@rubro.Id', 
                                         '@rubro.tipoRubroNombre',
                                         '@rubro.valorInicial',
+                                        '@rubro.valorGastado',
                                         '@rubro.Mes',
                                         '@rubro.Anio'
                                     )">
-                                    <i class="bi bi-trash"></i> Eliminar
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -289,7 +323,7 @@
                         <label for="crearMes" class="form-label">Mes</label>
                         <select id="crearMes" name="Mes" 
                                 class="form-select" required>
-                            <option value="">Seleccionar mes...</option>
+                            <option value="-1">Seleccionar mes...</option>
                             @if (ViewBag.Meses != null)
                             {
                                 foreach (var mes in ViewBag.Meses)
@@ -305,7 +339,7 @@
                         <label for="crearAnio" class="form-label">Año</label>
                         <select id="crearAnio" name="Anio" 
                                 class="form-select" required>
-                            <option value="">Seleccionar año...</option>
+                            <option value="-1">Seleccionar año...</option>
                             @if (ViewBag.Anios != null)
                             {
                                 foreach (var anio in ViewBag.Anios)
@@ -388,7 +422,10 @@
                             {
                                 foreach (var mes in ViewBag.Meses)
                                 {
-                                    <option value="@mes.Numero">@mes.Nombre</option>
+                                    <option value="@mes.Numero"
+                                            selected="@(ViewBag.FiltroMes?.ToString() == mes.Numero.ToString())">
+                                        @mes.Nombre
+                                    </option>
                                 }
                             }
                         </select>
@@ -528,7 +565,7 @@
     }
 
     function limpiarFiltros() {
-        window.location.href = '@Url.Action("Index", "Rubro")';
+        window.location.href = '@Url.Action("Index", "Budget")';
     }
 
     function aplicarFiltros() {
@@ -538,7 +575,7 @@
 
 
         // Construir URL con parámetros
-        let url = '@Url.Action("Index", "Rubro")';
+        let url = '@Url.Action("Index", "Budget")';
         const params = new URLSearchParams();
 
         if (rubroId) params.append('rubroTypeId', rubroId);

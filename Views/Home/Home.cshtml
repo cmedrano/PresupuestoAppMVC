@@ -8,59 +8,97 @@
 
     <div class="row g-4 justify-content-center">
 
-        <!-- CARD 1 -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-wallet2 fs-1 text-primary me-3"></i>
-                        <h5 class="card-title mb-0">Presupuesto</h5>
+        <!-- Presupuesto -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-wallet2 fs-1 text-primary me-3"></i>
+                            <h5 class="card-title mb-0">Presupuesto</h5>
+                        </div>
+                        <p class="card-text text-muted">
+                            Gestiona tu presupuesto mensual, controla ingresos y egresos.
+                        </p>
+                        <a asp-controller="Budget" asp-action="Index" class="btn btn-primary">
+                            Ver Presupuesto
+                        </a>
                     </div>
-                    <p class="card-text text-muted">
-                        Gestiona tu presupuesto mensual, controla ingresos y egresos.
-                    </p>
-                    <a asp-controller="Rubro" asp-action="Index" class="btn btn-primary">
-                        Ver Rubros
-                    </a>
                 </div>
             </div>
-        </div>
 
-        <!-- CARD 2 -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-cash-stack fs-1 text-success me-3"></i>
-                        <h5 class="card-title mb-0">Gastos</h5>
+            <!-- Gastos -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-cash-stack fs-1 text-success me-3"></i>
+                            <h5 class="card-title mb-0">Gastos</h5>
+                        </div>
+                        <p class="card-text text-muted">
+                            Registra y administra todos tus gastos de forma simple.
+                        </p>
+                        <a asp-controller="Gasto" asp-action="Index" class="btn btn-success">
+                            Ver Gastos
+                        </a>
                     </div>
-                    <p class="card-text text-muted">
-                        Registra y administra todos tus gastos de forma simple.
-                    </p>
-                    <a asp-controller="Gasto" asp-action="Index" class="btn btn-success">
-                        Ver Gastos
-                    </a>
                 </div>
             </div>
-        </div>
 
-        <!-- CARD 3 -->
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-file-earmark-text fs-1 text-danger me-3"></i>
-                        <h5 class="card-title mb-0">Rubros</h5>
+            <!-- Rubros -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-file-earmark-text fs-1 text-danger me-3"></i>
+                            <h5 class="card-title mb-0">Rubros</h5>
+                        </div>
+                        <p class="card-text text-muted">
+                            Visualiza un resumen general de difernetes rubros.
+                        </p>
+                        <a asp-controller="Category" asp-action="Index" class="btn btn-danger">
+                            Ver Rubros
+                        </a>
                     </div>
-                    <p class="card-text text-muted">
-                        Visualiza un resumen general de difernetes rubros.
-                    </p>
-                    <a asp-controller="Rubro" asp-action="Index" class="btn btn-danger">
-                        Ver Rubros
-                    </a>
                 </div>
             </div>
-        </div>
 
+            <!-- Cuentas -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-building fs-1 text-info me-3"></i>
+                            <h5 class="card-title mb-0">Cuentas</h5>
+                        </div>
+                        <p class="card-text text-muted">
+                            Administrar cuentas.
+                        </p>
+                        <a asp-controller="Account" asp-action="Index" class="btn btn-info">
+                            Ver Cuentas
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usuarios -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-person fs-1 text-secondary me-3"></i>
+                            <h5 class="card-title mb-0">Usuarios</h5>
+                        </div>
+                        <p class="card-text text-muted">
+                            Administrar usuarios.
+                        </p>
+                        <a asp-controller="User" asp-action="Index" class="btn btn-secondary">
+                            Ver Usuarios
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>

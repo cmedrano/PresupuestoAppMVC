@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Services;
+using PresupuestoMVC.Services.Interfaces;
 
 namespace PresupuestoMVC.Controllers
 {
     public class GastoController : Controller
     {
         private readonly IGastoService _gastoService;
-        private readonly IRubroService _rubroService;
+        private readonly IBudgetService _budgetService;
 
-        public GastoController(IGastoService gastoService, IRubroService rubroService)
+        public GastoController(IGastoService gastoService, IBudgetService budgetService)
         {
             _gastoService = gastoService;
-            _rubroService = rubroService;
+            _budgetService = budgetService;
         }
 
         public async Task<IActionResult> Index(int? rubroTypeId = null, int? cuentaId = null, int pagina = 1, int tamañoPagina = 10)
@@ -20,7 +21,7 @@ namespace PresupuestoMVC.Controllers
             try
             {
                 // Cargar datos para los dropdowns
-                var rubros = await _rubroService.GetAllRubroTypesAsync();
+                var rubros = await _budgetService.GetAllRubroTypesAsync();
                 var cuentas = await _gastoService.GetAllCuentasAsync();
 
                 // Crear filtro para el servicio
