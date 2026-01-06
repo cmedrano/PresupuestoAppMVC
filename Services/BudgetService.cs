@@ -40,6 +40,7 @@ namespace PresupuestoMVC.Services
         public async Task<IEnumerable<RubroType>> GetAllRubroTypesAsync()
         {
             var rubroTypes = await _context.RubroType
+                .Where(rt => rt.RubroPadreId == null)
                 .OrderBy(rt => rt.Id)
                 .ToListAsync();
             return rubroTypes;

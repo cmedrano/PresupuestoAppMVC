@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public DateTime Fecha { get; set; }
         public decimal Monto { get; set; }
-        public string Nota { get; set; }
+        public string? Nota { get; set; }
 
         // Relaciones
         public int RubroTypeId { get; set; }
