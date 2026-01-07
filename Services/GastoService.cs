@@ -79,7 +79,7 @@ namespace PresupuestoMVC.Services
                 int anio = fecha.Year;
 
                 var rubro = await _context.Budget.FirstOrDefaultAsync(r =>
-                    r.Id == createDto.RubroTypeId &&
+                    r.RubroTypeId == createDto.RubroTypeId &&
                     r.Mes == mes &&
                     r.Anio == anio
                 );
@@ -201,8 +201,8 @@ namespace PresupuestoMVC.Services
 
             // Aplicar paginación
             var gastos = await query
-                .OrderBy(g => g.Id)
-                .ThenBy(g => g.Cuenta.nombreCuenta)
+                .OrderByDescending(g => g.Fecha)
+                .ThenBy(g => g.Id)
                 .Skip((pagina - 1) * tamañoPagina)
                 .Take(tamañoPagina)
                 .ToListAsync();

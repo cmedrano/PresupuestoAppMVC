@@ -19,7 +19,7 @@
             <div class="col-md-8">
                 <h1 class="display-5 fw-bold">
                     <i class="bi bi-cash-stack me-3"></i>
-                    Sección de Gastos
+                    Gastos
                 </h1>
                 <p class="lead mb-0">Sistema de control y seguimiento de gastos - OCA Argentina</p>
             </div>
@@ -105,12 +105,11 @@
         <table class="table table-striped table-hover table-oca">
             <thead>
                 <tr>
-                    <th scope="col">ID</th>
                     <th scope="col">Fecha</th>
                     <th scope="col">Monto</th>
-                    <th scope="col">Nota</th>
                     <th scope="col">Rubro</th>
                     <th scope="col">Cuenta</th>
+                    <th scope="col">Nota</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
@@ -121,20 +120,19 @@
                     foreach (var gasto in paginacion.Datos)
                     {
                         <tr>
-                            <td>@gasto.Id</td>
                             <td data-fecha="@gasto.Fecha.ToString("yyyy-MM-dd")">
                                 @gasto.Fecha.ToString("dd/MM/yyyy")
                             </td>
                             <td data-monto="@gasto.Monto">
                                 @gasto.Monto.ToString("C")
-                            </td>
-                            <td>@gasto.Nota</td>
+                            </td>            
                             <td data-rubroid="@gasto.RubroTypeId">
                                 @gasto.RubroTypeNombre
                             </td>
                             <td data-cuentaid="@gasto.CuentaId">
                                 @gasto.CuentaNombre
                             </td>
+                            <td>@(gasto.Nota ?? "")</td>
                             <td>
                                 <button class="btn btn-sm btn-primary me-1 btn-editar-gasto" 
                                     onclick="abrirModalEditar(
@@ -145,7 +143,7 @@
                                         @gasto.RubroTypeId, 
                                         @gasto.CuentaId
                                     )">
-                                    <i class="bi bi-pencil-square"></i> Editar
+                                    <i class="bi bi-pencil-square"></i> 
                                 </button>
                                 <button class="btn btn-sm btn-danger btn-eliminar-gasto" 
                                     onclick="abrirModalEliminar(
@@ -154,7 +152,7 @@
                                         @gasto.Monto.ToString().Replace(",", "."), 
                                         '@gasto.RubroTypeNombre'
                                     )">
-                                    <i class="bi bi-trash"></i> Eliminar
+                                    <i class="bi bi-trash"></i> 
                                 </button>
                             </td>
                         </tr>
@@ -262,19 +260,19 @@
                         <textarea id="crearNota" name="Nota" 
                                   class="form-control" rows="3"
                                   placeholder="Descripción del gasto..."
-                                  required></textarea>
+                         </textarea>
                     </div>
                     
                     <!-- Rubro -->
                     <div class="mb-3">
                         <label for="crearRubroId" class="form-label">Rubro</label>
-                        <select id="crearRubroId" name="RubroTypeId" 
+                        <select id="crearRubroId" name="RubroTypeId"
                                 class="form-select" required>
                             <option value="">Seleccionar rubro...</option>
                             @if (ViewBag.Rubros != null)
                             {
                                 foreach (var rubro in ViewBag.Rubros)
-                                {
+                                { 
                                     <option value="@rubro.Id">@rubro.nombreRubro</option>
                                 }
                             }
@@ -465,8 +463,8 @@
         document.getElementById('crearFecha').value = new Date().toISOString().split('T')[0];
         document.getElementById('crearMonto').value = '';
         document.getElementById('crearNota').value = '';
-        document.getElementById('crearRubroId').value = '';
-        document.getElementById('crearCuentaId').value = '';
+        document.getElementById('crearRubroId');
+        document.getElementById('crearCuentaId');
     
         // Mostrar modal
         const modal = new bootstrap.Modal(document.getElementById('modalCrear'));

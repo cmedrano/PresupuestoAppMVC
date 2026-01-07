@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PresupuestoMVC.Enums;
+using PresupuestoMVC.Models.ViewModels;
+using PresupuestoMVC.Services;
 using PresupuestoMVC.Services.Interfaces;
 
 namespace PresupuestoMVC.Controllers
@@ -26,6 +28,29 @@ namespace PresupuestoMVC.Controllers
             {
                 TempData["Error"] = "Error al cargar los datos: " + ex.Message;
                 return RedirectToAction("Error", "Home");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAccount(CreateAccountViewRequest accountRequest)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Datos inválidos";
+                    return RedirectToAction("Index");
+                }
+
+                await _AccountService.CreateAccountAsync(accountRequest);
+
+                TempData["Success"] = "Cuenta creado correctamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
             }
         }
     }

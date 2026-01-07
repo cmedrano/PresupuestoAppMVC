@@ -163,11 +163,11 @@
                                 <div class="progress border border-secondary mb-1" style="height: 16px;">
                                     <div class="progress-bar bg-primary"
                                          role="progressbar"
-                                         style="width:@porcentajeDisponible.ToString("0.##")%">
+                                         style="width:@porcentajeGastado.ToString("0.##")%">
                                     </div>
                                     <div class="progress-bar bg-light"
                                          role="progressbar"
-                                         style="width:@porcentajeGastado.ToString("0.##")%">
+                                         style="width:@porcentajeDisponible.ToString("0.##")%">
                                     </div>
                                 </div>
                             </td>
@@ -279,14 +279,14 @@
             <!-- Header verde -->
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">
-                    <i class="bi bi-plus-circle me-2"></i>Nuevo Rubro
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Presupuesto
                 </h5>
                 <button type="button" class="btn-close btn-close-white" 
                         data-bs-dismiss="modal"></button>
             </div>
             
             <!-- Formulario -->
-            <form asp-controller="Rubro" asp-action="Create" method="post">
+            <form asp-controller="Budget" asp-action="Create" method="post">
                 <div class="modal-body">
                     <!-- Rubro -->
                     <div class="mb-3">
@@ -356,7 +356,7 @@
                         <button type="button" class="btn btn-secondary" 
                                 data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-circle me-1"></i>Crear Rubro
+                            <i class="bi bi-check-circle me-1"></i>Crear Presupuesto
                         </button>
                     </div>
                </div>

@@ -1,4 +1,8 @@
-﻿using PresupuestoMVC.Models.DTOs;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using PresupuestoMVC.Models.DTOs;
+using PresupuestoMVC.Models.Entities;
+using PresupuestoMVC.Models.ViewModels;
+using PresupuestoMVC.Repository;
 using PresupuestoMVC.Repository.Interfaces;
 using PresupuestoMVC.Services.Interfaces;
 
@@ -15,6 +19,16 @@ namespace PresupuestoMVC.Services
         public async Task<IEnumerable<CuentaResponseDto>> GetAllUsersAsync()
         {
             return await _accountRepository.GetAllAccountAsync();
+        }
+        public async Task<CuentaResponseDto> CreateAccountAsync(CreateAccountViewRequest accountRequest)
+        {
+            var account = new Cuenta
+            {
+                nombreCuenta = accountRequest.AccountName,
+                SaldoInicial = accountRequest.InitialBalance,
+                SaldoActual = accountRequest.InitialBalance
+            };
+            return await _accountRepository.CreateAccountAsync(account);
         }
     }
 }
