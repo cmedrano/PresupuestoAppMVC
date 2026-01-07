@@ -239,13 +239,26 @@
 
                     <!-- Usuario -->
                     <div class="mb-3">
-                        <label for="createUserId" class="form-label">Nombre de la cuenta</label>
+                        <label for="createAccount" class="form-label">Nombre de la cuenta</label>
                         <div class="input-group">
-                            <input type="string" id="createUserId" name="userName"
+                            <input type="string" id="createAccountId" name="AccountName"
                                    class="form-control"
                                    min="0"
                                    step="1"
-                                   placeholder="Richard"
+                                   placeholder="Banco Macro"
+                                   required />
+                        </div>
+                    </div>
+
+                    <!-- saldo inicial -->
+                    <div class="mb-3">
+                        <label for="InitialBalance" class="form-label">Saldo inicial</label>
+                        <div class="input-group">
+                            <input type="string" id="InitialBalanceId" name="InitialBalance"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                                   placeholder="$1000"
                                    required />
                         </div>
                     </div>
@@ -374,13 +387,9 @@
     // }
 
     function abrirModalCrear() {
-        // Resetear formulario
-        document.getElementById('createUserId').value = '';
-        document.getElementById('createPassword');
-        document.getElementById('CreateEmail');
-        document.getElementById('rolId');
+        document.getElementById('createAccountId');
+        document.getElementById('InitialBalanceId');
 
-        // Mostrar modal
         const modal = new bootstrap.Modal(document.getElementById('modalCrear'));
         modal.show();
     }

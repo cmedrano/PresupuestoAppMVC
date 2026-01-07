@@ -107,9 +107,9 @@
                 <tr>
                     <th scope="col">Fecha</th>
                     <th scope="col">Monto</th>
-                    <th scope="col">Nota</th>
                     <th scope="col">Rubro</th>
                     <th scope="col">Cuenta</th>
+                    <th scope="col">Nota</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
@@ -125,14 +125,14 @@
                             </td>
                             <td data-monto="@gasto.Monto">
                                 @gasto.Monto.ToString("C")
-                            </td>
-                            <td>@(gasto.Nota ?? "")</td>
+                            </td>            
                             <td data-rubroid="@gasto.RubroTypeId">
                                 @gasto.RubroTypeNombre
                             </td>
                             <td data-cuentaid="@gasto.CuentaId">
                                 @gasto.CuentaNombre
                             </td>
+                            <td>@(gasto.Nota ?? "")</td>
                             <td>
                                 <button class="btn btn-sm btn-primary me-1 btn-editar-gasto" 
                                     onclick="abrirModalEditar(
