@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PresupuestoMVC.Data;
 using PresupuestoMVC.Models.DTOs;
+using PresupuestoMVC.Models.Entities;
 using PresupuestoMVC.Repository.Interfaces;
 
 namespace PresupuestoMVC.Repository
@@ -30,6 +31,25 @@ namespace PresupuestoMVC.Repository
                 
             }).ToList();
             return accountsDto;
+        }
+        public async Task<CuentaResponseDto> CreateAccountAsync(Cuenta account)
+        {
+            var accountExiste = await _context.Cuentas
+                .AnyAsync(r => r.nombreCuenta == account.nombreCuenta);
+
+            if (accountExiste)
+                throw new InvalidOperationException("El nombre de la cuenta ya existe.");
+
+            _context.Cuentas.Add(account);
+            await _context.SaveChangesAsync();
+            var createdAccount = await _context.Cuentas
+                .FirstOrDefaultAsync(r => r.nombreCuenta == account.nombreCuenta);
+
+            return new CuentaResponseDto
+            {
+                Id = createdAccount.Id,
+                nombreCuenta = createdAccount.nombreCuenta
+            };
         }
     }
 }
