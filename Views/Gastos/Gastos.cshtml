@@ -150,7 +150,8 @@
                                         '@gasto.Id', 
                                         '@gasto.Fecha.ToString("dd/MM/yyyy")', 
                                         @gasto.Monto.ToString().Replace(",", "."), 
-                                        '@gasto.RubroTypeNombre'
+                                        '@gasto.RubroTypeNombre',
+                                        '@gasto.CuentaNombre'
                                     )">
                                     <i class="bi bi-trash"></i> 
                                 </button>
@@ -405,10 +406,10 @@
             </div>
             
             <!-- Formulario -->
-            <form asp-controller="Gasto" asp-action="Delete" method="post">
+            <form asp-controller="Gasto" asp-action="DeleteGasto" method="post">
                 <div class="modal-body">
                     <!-- Campo oculto para el ID -->
-                    <input type="hidden" id="deleteGastoId" name="id" />
+                    <input type="hidden" id="deleteGastoId" name="gastoId" />
                     
                     <!-- Mensaje de confirmación -->
                     <div class="text-center">
@@ -421,10 +422,10 @@
                         <!-- Información del gasto a eliminar -->
                         <div class="alert alert-light mt-3 text-start" id="deleteGastoInfo">
                             <div class="row">
-                                <div class="col-6"><strong>ID:</strong> <span id="deleteGastoIdText">-</span></div>
-                                <div class="col-6"><strong>Fecha:</strong> <span id="deleteGastoFecha">-</span></div>
+                                <div class="col-6 mt-2"><strong>Fecha:</strong> <span id="deleteGastoFecha">-</span></div>
                                 <div class="col-6 mt-2"><strong>Monto:</strong> <span id="deleteGastoMonto">-</span></div>
                                 <div class="col-6 mt-2"><strong>Rubro:</strong> <span id="deleteGastoRubro">-</span></div>
+                                <div class="col-6 mt-2"><strong>Cuenta:</strong> <span id="deleteCuenta">-</span></div>
                             </div>
                         </div>
                     </div>
@@ -471,13 +472,13 @@
         modal.show();
     }
 
-    function abrirModalEliminar(id, fecha, monto, rubro) {
+    function abrirModalEliminar(id, fecha, monto, rubro, cuenta) {
         // Llenar formulario
         document.getElementById('deleteGastoId').value = id;
-        document.getElementById('deleteGastoIdText').textContent = id;
         document.getElementById('deleteGastoFecha').textContent = fecha;
         document.getElementById('deleteGastoMonto').textContent = '$' + parseFloat(monto).toFixed(2);
         document.getElementById('deleteGastoRubro').textContent = rubro;
+        document.getElementById('deleteCuenta').textContent = cuenta;
     
         // Mostrar modal
         const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));

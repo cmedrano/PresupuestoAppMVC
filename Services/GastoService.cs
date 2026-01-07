@@ -142,15 +142,50 @@ namespace PresupuestoMVC.Services
             return _mapper.Map<GastoResponseDto>(result);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteGastoAsync(int gastoId)
         {
-            var gastoExiste = await _context.Gastos.FindAsync(id);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            if (gastoExiste == null)
-                throw new Exception($"Gasto con ID {id} no encontrado.");
+            try
+            {
+                var gasto = await _context.Gastos
+                    .FirstOrDefaultAsync(g => g.Id == gastoId);
 
-            _context.Gastos.Remove(gastoExiste);
-            await _context.SaveChangesAsync();
+                if (gasto == null)
+                    throw new Exception($"Gasto con ID {gastoId} no encontrado");
+
+                var cuenta = await _context.Cuentas
+                    .FirstOrDefaultAsync(c => c.Id == gasto.CuentaId);
+
+                if (cuenta == null)
+                    throw new Exception("Cuenta no encontrada");
+
+                var fecha = gasto.Fecha;
+                int mes = fecha.Month;
+                int anio = fecha.Year;
+
+                var rubro = await _context.Budget.FirstOrDefaultAsync(r =>
+                    r.RubroTypeId == gasto.RubroTypeId &&
+                    r.Mes == mes &&
+                    r.Anio == anio
+                );
+
+                if (rubro == null)
+                    throw new Exception("Rubro del gasto no encontrado");
+
+                cuenta.SaldoActual += gasto.Monto;
+                rubro.ValorGastado -= gasto.Monto;
+
+                _context.Gastos.Remove(gasto);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
             return true;
         }
 
