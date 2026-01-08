@@ -57,7 +57,7 @@ namespace PresupuestoMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int Id, UpdateGastoViewRequest model)
+        public async Task<IActionResult> Edit(UpdateGastoViewRequest updateDto)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace PresupuestoMVC.Controllers
                     return RedirectToAction("Index");
                 }
 
-                await _gastoService.UpdateAsync(Id, model);
+                await _gastoService.UpdateAsync(updateDto);
 
                 TempData["Success"] = "Gasto actualizado correctamente";
                 return RedirectToAction("Index");

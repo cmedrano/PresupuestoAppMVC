@@ -106,40 +106,76 @@ namespace PresupuestoMVC.Services
             }
         }
 
-        public async Task<GastoResponseDto> UpdateAsync(int id, UpdateGastoViewRequest updateDto)
+        public async Task<GastoResponseDto> UpdateAsync(UpdateGastoViewRequest updateDto)
         {
-            // Validar existencia
-            var existingGasto = await _context.Gastos
-                .Include(g => g.RubroType)
-                .Include(g => g.Cuenta)
-                .FirstOrDefaultAsync(g => g.Id == id);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            if (existingGasto == null)
-                throw new Exception($"Gasto con ID {id} no encontrado.");
+            try
+            {
+                var gasto = await _context.Gastos
+                    .FirstOrDefaultAsync(g => g.Id == updateDto.Id);
 
-            var existeRubro = await _context.Budget.AnyAsync(r => r.Id == updateDto.RubroTypeId);
-            if (!existeRubro)
-                throw new Exception($"Rubro con ID {updateDto.RubroTypeId} no existe.");
+                if (gasto == null)
+                    throw new Exception("Gasto no encontrado");
 
-            var existeCuenta = await _context.Cuentas.AnyAsync(c => c.Id == updateDto.CuentaId);
-            if (!existeCuenta)
-                throw new Exception($"Cuenta con ID {updateDto.CuentaId} no existe.");
+                var cuentaAnterior = await _context.Cuentas
+                    .FirstOrDefaultAsync(c => c.Id == gasto.CuentaId);
 
-            // Actualizar
-            existingGasto.RubroTypeId = updateDto.RubroTypeId;
-            existingGasto.CuentaId = updateDto.CuentaId;
-            existingGasto.Fecha = updateDto.Fecha;
-            existingGasto.Monto = updateDto.Monto;
-            existingGasto.Nota = updateDto.Nota;
+                var rubroAnterior = await _context.Budget
+                    .FirstOrDefaultAsync(r =>
+                        r.RubroTypeId == gasto.RubroTypeId &&
+                        r.Mes == gasto.Fecha.Month &&
+                        r.Anio == gasto.Fecha.Year);
 
-            await _context.SaveChangesAsync();
+                if (cuentaAnterior == null || rubroAnterior == null)
+                    throw new Exception("Datos anteriores inválidos");
 
-            var result = await _context.Gastos
-                .Include(g => g.RubroType)
-                .Include(g => g.Cuenta)
-                .FirstOrDefaultAsync(g => g.Id == existingGasto.Id);
+                cuentaAnterior.SaldoActual += gasto.Monto;
+                rubroAnterior.ValorGastado -= gasto.Monto;
 
-            return _mapper.Map<GastoResponseDto>(result);
+                var cuentaNueva = await _context.Cuentas
+                    .FirstOrDefaultAsync(c => c.Id == updateDto.CuentaId);
+
+                if (cuentaNueva == null)
+                    throw new Exception("Cuenta nueva no encontrada");
+
+                if (cuentaNueva.SaldoActual < updateDto.Monto)
+                    throw new Exception("Saldo insuficiente");
+
+                var rubroNuevo = await _context.Budget
+                    .FirstOrDefaultAsync(r =>
+                        r.RubroTypeId == updateDto.RubroTypeId &&
+                        r.Mes == updateDto.Fecha.Month &&
+                        r.Anio == updateDto.Fecha.Year);
+
+                if (rubroNuevo == null)
+                    throw new Exception("Rubro nuevo no encontrado");
+
+                gasto.Monto = updateDto.Monto;
+                gasto.Fecha = updateDto.Fecha;
+                gasto.RubroTypeId = updateDto.RubroTypeId;
+                gasto.CuentaId = updateDto.CuentaId;
+                gasto.Nota = updateDto.Nota;
+
+                cuentaNueva.SaldoActual -= updateDto.Monto;
+                rubroNuevo.ValorGastado += updateDto.Monto;
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                var result = await _context.Gastos
+                    .Include(g => g.RubroType)
+                    .Include(g => g.Cuenta)
+                    .FirstAsync(g => g.Id == gasto.Id);
+
+                return _mapper.Map<GastoResponseDto>(result);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
         }
 
         public async Task<bool> DeleteGastoAsync(int gastoId)

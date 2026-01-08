@@ -79,11 +79,11 @@
                         <i class="bi bi-funnel"></i>Aplicar Filtros
                     </button>
                     <button class="btn btn-outline-secondary" id="btnLimpiarFiltros"
-                            onclick="limpiarFiltros()">
+                            onclick="limpiarFiltrosGasto()">
                         <i class="bi bi-arrow-clockwise"></i>Limpiar
                     </button>
                     <button class="btn btn-outline-success" id="btnNuevoGasto"
-                            onclick="abrirModalCrear()">
+                            onclick="AbrirModalCrearGasto()">
                         <i class="bi bi-plus-circle"></i>Nuevo Gasto
                     </button>
                 </div>
@@ -91,14 +91,6 @@
 
         </div>
     </section>
-
-    <!-- Loading Spinner -->
-    @* <div class="loading-spinner" id="loadingSpinner">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Cargando...</span>
-        </div>
-        <p class="mt-2 text-muted">Cargando gastos...</p>
-    </div> *@
 
     <!-- Grilla de Gastos -->
     <div class="table-responsive">
@@ -134,9 +126,9 @@
                             </td>
                             <td>@(gasto.Nota ?? "")</td>
                             <td>
-                                <button class="btn btn-sm btn-primary me-1 btn-editar-gasto" 
-                                    onclick="abrirModalEditar(
-                                        '@gasto.Id', 
+                                <button class="btn btn-sm btn-primary me-1 btn-editar-gasto"
+                                        onclick="AbrirModalEditarGasto(
+                                        '@gasto.Id',
                                         '@gasto.Fecha.ToString("yyyy-MM-dd")', 
                                         @gasto.Monto.ToString().Replace(",", "."), 
                                         '@Html.Raw(gasto.Nota?.Replace("'", "\\'") ?? "")', 
@@ -145,8 +137,8 @@
                                     )">
                                     <i class="bi bi-pencil-square"></i> 
                                 </button>
-                                <button class="btn btn-sm btn-danger btn-eliminar-gasto" 
-                                    onclick="abrirModalEliminar(
+                                <button class="btn btn-sm btn-danger btn-eliminar-gasto"
+                                        onclick="AbrirModalEliminarGasto(
                                         '@gasto.Id', 
                                         '@gasto.Fecha.ToString("dd/MM/yyyy")', 
                                         @gasto.Monto.ToString().Replace(",", "."), 
@@ -224,7 +216,7 @@
 </div>
 
 <!-- Modal de Creación -->
-<div class="modal fade" id="modalCrear" tabindex="-1">
+<div class="modal fade" id="modalCrearGastoId" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content border-success">
             <!-- Header verde -->
@@ -232,38 +224,28 @@
                 <h5 class="modal-title">
                     <i class="bi bi-plus-circle me-2"></i>Nuevo Gasto
                 </h5>
-                <button type="button" class="btn-close btn-close-white" 
-                        data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white"
+                 data-bs-dismiss="modal"></button>
             </div>
-            
-            <!-- Formulario -->
             <form asp-controller="Gasto" asp-action="Create" method="post">
                 <div class="modal-body">
+
                     <!-- Fecha (hoy por defecto) -->
                     <div class="mb-3">
                         <label for="crearFecha" class="form-label">Fecha</label>
-                        <input type="date" id="crearFecha" name="Fecha" 
-                               class="form-control" required 
+                        <input type="date" id="crearFecha" name="Fecha"
+                               class="form-control" required
                                value="@DateTime.Now.ToString("yyyy-MM-dd")" />
                     </div>
-                    
+
                     <!-- Monto -->
                     <div class="mb-3">
                         <label for="crearMonto" class="form-label">Monto</label>
-                        <input type="number" step="0.01" id="crearMonto" 
-                               name="Monto" class="form-control" required 
+                        <input type="number" step="0.01" id="crearMonto"
+                               name="Monto" class="form-control" required
                                placeholder="$ 0.00" />
                     </div>
-                    
-                    <!-- Nota -->
-                    <div class="mb-3">
-                        <label for="crearNota" class="form-label">Nota</label>
-                        <textarea id="crearNota" name="Nota" 
-                                  class="form-control" rows="3"
-                                  placeholder="Descripción del gasto..."
-                         </textarea>
-                    </div>
-                    
+
                     <!-- Rubro -->
                     <div class="mb-3">
                         <label for="crearRubroId" class="form-label">Rubro</label>
@@ -273,17 +255,17 @@
                             @if (ViewBag.Rubros != null)
                             {
                                 foreach (var rubro in ViewBag.Rubros)
-                                { 
+                                {
                                     <option value="@rubro.Id">@rubro.nombreRubro</option>
                                 }
                             }
                         </select>
                     </div>
-                    
+
                     <!-- Cuenta -->
                     <div class="mb-3">
                         <label for="crearCuentaId" class="form-label">Cuenta</label>
-                        <select id="crearCuentaId" name="CuentaId" 
+                        <select id="crearCuentaId" name="CuentaId"
                                 class="form-select" required>
                             <option value="">Seleccionar cuenta...</option>
                             @if (ViewBag.Cuentas != null)
@@ -295,22 +277,36 @@
                             }
                         </select>
                     </div>
-                </div>
-                
+
+                    <!-- Nota -->
+                    <div class="mb-3">
+                        <label for="crearNota" class="form-label">Nota</label>
+                        <div class="input-group">
+                            <textarea id="crearNota"
+                                      name="Nota"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Descripción..."></textarea>
+                        </div>
+                    </div>
+
+                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" 
-                            data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
                     <button type="submit" class="btn btn-success">
                         <i class="bi bi-check-circle me-1"></i>Crear Gasto
                     </button>
                 </div>
             </form>
-        </div>
+         </div>
     </div>
 </div>
 
 <!-- Modal de Edición -->
-<div class="modal fade" id="modalEditar" tabindex="-1">
+<div class="modal fade" id="modalEditarGastoId" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form asp-controller="Gasto" asp-action="Edit" method="post">
@@ -324,7 +320,7 @@
                 
                 <div class="modal-body">
                     <!-- Campo oculto para el ID -->
-                    <input type="hidden" id="editGastoId" name="Id" value=""/>
+                    <input type="hidden" id="editGastoId" name="Id" />
                     
                     <!-- Fecha -->
                     <div class="mb-3">
@@ -338,13 +334,6 @@
                         <label for="editMonto" class="form-label">Monto</label>
                         <input type="number" step="0.01" id="editMonto" 
                                name="Monto" class="form-control" required />
-                    </div>
-                    
-                    <!-- Nota -->
-                    <div class="mb-3">
-                        <label for="editNota" class="form-label">Nota</label>
-                        <textarea id="editNota" name="Nota" 
-                                  class="form-control" rows="3"></textarea>
                     </div>
                     
                     <!-- Rubro -->
@@ -378,6 +367,14 @@
                             }
                         </select>
                     </div>
+
+                    <!-- Nota -->
+                    <div class="mb-3">
+                        <label for="editNota" class="form-label">Nota</label>
+                        <textarea id="editNota" name="Nota"
+                                  class="form-control" rows="3"></textarea>
+                    </div>
+
                 </div>
                 
                 <div class="modal-footer">
@@ -393,7 +390,7 @@
 </div>
 
 <!-- Modal de Eliminación -->
-<div class="modal fade" id="modalEliminar" tabindex="-1">
+<div class="modal fade" id="modalEliminarGastoId" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content border-danger">
             <!-- Header rojo -->
@@ -444,71 +441,64 @@
 </div>
 
 <script>
+    function AbrirModalCrearGasto(){
+        document.getElementById('crearFecha').value = new Date().toISOString().split('T')[0];
+        document.getElementById('crearMonto').value = "";
+        document.getElementById('crearNota').value = "";
+        document.getElementById('crearRubroId').value = "";
+        document.getElementById('crearCuentaId').value = "";
 
-    function abrirModalEditar(id, fecha, monto, nota, rubroId, cuentaId) {
-        // Llenar formulario
+        const modal = new bootstrap.Modal(document.getElementById('modalCrearGastoId'));
+        modal.show();
+    }
+
+    function AbrirModalEditarGasto(id, fecha, monto, nota, rubroId, cuentaId) {
         document.getElementById('editGastoId').value = id;
         document.getElementById('editFecha').value = fecha;
         document.getElementById('editMonto').value = monto;
         document.getElementById('editNota').value = nota;
         document.getElementById('editRubroId').value = rubroId;
         document.getElementById('editCuentaId').value = cuentaId;
-    
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById('modalEditar'));
+
+        const modal = new bootstrap.Modal(document.getElementById('modalEditarGastoId'));
         modal.show();
     }
 
-    function abrirModalCrear() {
-        // Resetear formulario
-        document.getElementById('crearFecha').value = new Date().toISOString().split('T')[0];
-        document.getElementById('crearMonto').value = '';
-        document.getElementById('crearNota').value = '';
-        document.getElementById('crearRubroId');
-        document.getElementById('crearCuentaId');
-    
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById('modalCrear'));
-        modal.show();
-    }
-
-    function abrirModalEliminar(id, fecha, monto, rubro, cuenta) {
-        // Llenar formulario
+    function AbrirModalEliminarGasto(id, fecha, monto, rubro, cuenta) {
         document.getElementById('deleteGastoId').value = id;
         document.getElementById('deleteGastoFecha').textContent = fecha;
         document.getElementById('deleteGastoMonto').textContent = '$' + parseFloat(monto).toFixed(2);
         document.getElementById('deleteGastoRubro').textContent = rubro;
         document.getElementById('deleteCuenta').textContent = cuenta;
     
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+        const modal = new bootstrap.Modal(document.getElementById('modalEliminarGastoId'));
         modal.show();
     }
 
-    function limpiarFiltros() {
-        window.location.href = '@Url.Action("Index", "Gasto")';
-    }
+    // function limpiarFiltrosGasto() {
+    //     window.location.href = '@Url.Action("Index", "Gasto")';
+    // }
 
-    function aplicarFiltros() {
-        const rubroId = document.getElementById('rubroFilter').value;
-        const cuentaId = document.getElementById('cuentaFilter').value;
+    // function aplicarFiltros() {
+    //     const rubroId = document.getElementById('rubroFilter').value;
+    //     const cuentaId = document.getElementById('cuentaFilter').value;
 
-        // Construir URL con parámetros
-        let url = '@Url.Action("Index", "Gasto")';
-        const params = new URLSearchParams();
+    //     // Construir URL con parámetros
+    //     let url = '@Url.Action("Index", "Gasto")';
+    //     const params = new URLSearchParams();
 
-        if (rubroId) params.append('rubroTypeId', rubroId);
-        if (cuentaId) params.append('cuentaId', cuentaId);
+    //     if (rubroId) params.append('rubroTypeId', rubroId);
+    //     if (cuentaId) params.append('cuentaId', cuentaId);
 
-        // Mantener página actual
-        params.append('pagina', 1);
-        params.append('tamañoPagina', @ViewBag.TamañoPagina);
+    //     // Mantener página actual
+    //     params.append('pagina', 1);
+    //     params.append('tamañoPagina', @ViewBag.TamañoPagina);
 
-        if (params.toString()) {
-            url += '?' + params.toString();
-        }
+    //     if (params.toString()) {
+    //         url += '?' + params.toString();
+    //     }
 
-        window.location.href = url;
-    }
+    //     window.location.href = url;
+    // }
 
 </script>
