@@ -1,5 +1,6 @@
 ﻿using PresupuestoMVC.Models.DTOs;
 using PresupuestoMVC.Models.Entities;
+using PresupuestoMVC.Models.ViewModels;
 
 namespace PresupuestoMVC.Repository.Interfaces
 {
@@ -7,5 +8,6 @@ namespace PresupuestoMVC.Repository.Interfaces
     {
         Task<IEnumerable<CuentaResponseDto>> GetAllAccountAsync();
         Task<CuentaResponseDto> CreateAccountAsync(Cuenta account);
+        Task<CuentaResponseDto> CreateIncomeAsync(CreateIncomeViewRequest income);
     }
 }

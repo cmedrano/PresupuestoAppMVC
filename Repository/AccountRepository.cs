@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PresupuestoMVC.Data;
 using PresupuestoMVC.Models.DTOs;
 using PresupuestoMVC.Models.Entities;
+using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Repository.Interfaces;
 
 namespace PresupuestoMVC.Repository
@@ -49,6 +50,24 @@ namespace PresupuestoMVC.Repository
             {
                 Id = createdAccount.Id,
                 nombreCuenta = createdAccount.nombreCuenta
+            };
+        }
+        public async Task<CuentaResponseDto> CreateIncomeAsync(CreateIncomeViewRequest income)
+        {
+            var account = await _context.Cuentas
+                .FirstOrDefaultAsync(r => r.Id == income.Id);
+
+            if (account == null)
+                throw new InvalidOperationException("la cuenta no existe.");
+
+            account.SaldoActual += income.Amount;
+            await _context.SaveChangesAsync();
+
+            return new CuentaResponseDto
+            {
+                Id = account.Id,
+                nombreCuenta = account.nombreCuenta,
+                SaldoActual = account.SaldoActual
             };
         }
     }

@@ -57,7 +57,7 @@ namespace PresupuestoMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int Id, UpdateGastoViewRequest model)
+        public async Task<IActionResult> Edit(UpdateGastoViewRequest updateDto)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace PresupuestoMVC.Controllers
                     return RedirectToAction("Index");
                 }
 
-                await _gastoService.UpdateAsync(Id, model);
+                await _gastoService.UpdateAsync(updateDto);
 
                 TempData["Success"] = "Gasto actualizado correctamente";
                 return RedirectToAction("Index");
@@ -103,7 +103,7 @@ namespace PresupuestoMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteGasto(int gastoId)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace PresupuestoMVC.Controllers
                     return RedirectToAction("Index");
                 }
 
-                await _gastoService.DeleteAsync(id);
+                await _gastoService.DeleteGastoAsync(gastoId);
 
                 TempData["Success"] = "Gasto eliminado correctamente";
                 return RedirectToAction("Index");
