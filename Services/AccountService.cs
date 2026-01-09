@@ -30,5 +30,9 @@ namespace PresupuestoMVC.Services
             };
             return await _accountRepository.CreateAccountAsync(account);
         }
+        public async Task<CuentaResponseDto> CreateIncomeAsync(CreateIncomeViewRequest income)
+        {
+            return await _accountRepository.CreateIncomeAsync(income);
+        }
     }
 }

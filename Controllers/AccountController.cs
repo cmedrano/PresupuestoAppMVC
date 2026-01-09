@@ -53,5 +53,27 @@ namespace PresupuestoMVC.Controllers
                 return RedirectToAction("Index");
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateIncome(CreateIncomeViewRequest IncomeRequest)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Datos inválidos";
+                    return RedirectToAction("Index");
+                }
+
+                await _AccountService.CreateIncomeAsync(IncomeRequest);
+
+                TempData["Success"] = "se ingreso correctamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
     }
 }
