@@ -7,5 +7,6 @@ namespace PresupuestoMVC.Services.Interfaces
     {
         Task<IEnumerable<CuentaResponseDto>> GetAllUsersAsync();
         Task<CuentaResponseDto> CreateAccountAsync(CreateAccountViewRequest accountRequest);
+        Task<CuentaResponseDto> CreateIncomeAsync(CreateIncomeViewRequest income);
     }
 }

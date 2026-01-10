@@ -36,66 +36,29 @@
     <section class="filter-section">
         <div class="row align-items-end">
 
-            @*             <div class="col-md-3">
-            <label for="rubroFilter" class="form-label fw-semibold">
-            <i class="bi bi-tags me-1"></i>Filtrar por rol de usuario
-            </label>
-            <select class="form-select" id="rubroFilter">
-            <option value="">Todos los Roles</option>
-            @foreach (var rol in roles)
-            {
-            <option value="@rol.Value">
-            @rol.Text
-            </option>
-            }
-            </select>
-            </div> *@
-            @*
-            <div class="col-md-3">
-            <label for="mesFilter" class="form-label fw-semibold">
-            <i class="bi bi-wallet2 me-1"></i>Filtrar por Meses
-            </label>
-            <select class="form-select" id="mesFilter">
-            <option value="">Todos los Meses</option>
-            @foreach (var mesItem in ViewBag.Meses)
-            {
-            <option value="@mesItem.Numero"
-            selected="@(ViewBag.FiltroMes?.ToString() == mesItem.Numero.ToString())">
-            @mesItem.Nombre
-            </option>
-            }
-            </select>
-            </div>  *@
-
-            @*              <div class="col-md-2">
-            <label for="aniosFilter" class="form-label fw-semibold">
-            <i class="bi bi-wallet2 me-1"></i>Filtrar por Años
-            </label>
-            <select class="form-select" id="aniosFilter">
-            <option value="">Todos los Años</option>
-            @foreach (var anio in ViewBag.Anios)
-            {
-            <option value="@anio"
-            selected="@(ViewBag.FiltroAnio?.ToString() == anio.ToString())">
-            @anio
-            </option>
-            }
-            </select>
-            </div>  *@
-
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <div class="d-flex gap-2 align-items-end">
-                    @*                     <button class="btn btn-outline-primary" id="btnAplicarFiltros"
-                    onclick="aplicarFiltros()">
-                    <i class="bi bi-funnel"></i>Aplicar Filtros
-                    </button>
-                    <button class="btn btn-outline-secondary" id="btnLimpiarFiltros"
-                    onclick="limpiarFiltros()">
-                    <i class="bi bi-arrow-clockwise"></i>Limpiar
-                    </button> *@
-                    <button class="btn btn-outline-success" id="btnNuevaCuenta"
+                    <button class="btn btn-success" id="btnNuevaCuenta"
                             onclick="abrirModalCrear()">
-                        <i class="bi bi-plus-circle"></i>Nueva Cuenta
+                        <i class="bi bi-plus-circle"></i> Nueva Cuenta
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="d-flex gap-2 align-items-end">
+                    <button class="btn btn-warning text-white" id="btnNuevoIngreso"
+                            onclick="abrirModalIngresar()">
+                        <i class="bi bi-plus-circle"></i> Nuevo Ingreso
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="d-flex gap-2 align-items-end">
+                    <button class="btn btn-secondary" id="btnNuevaCuenta"
+                            onclick="abrirModalTransferir()">
+                        <i class="bi bi-plus-circle"></i> Transferir
                     </button>
                 </div>
             </div>
@@ -110,6 +73,7 @@
                 <tr>
                     <th scope="col">Cuenta</th>
                     <th scope="col">Monto</th>
+                    <th scope="col">Acciones</th>
                 </tr>
             </thead>
             <tbody id="accountTableBody">
@@ -222,7 +186,7 @@
 
 <!-- Modal de Creación -->
 <div class="modal fade" id="modalCrear" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content border-success">
             <!-- Header verde -->
             <div class="modal-header bg-success text-white">
@@ -237,7 +201,7 @@
             <form asp-controller="Account" asp-action="CreateAccount" method="post">
                 <div class="modal-body">
 
-                    <!-- Usuario -->
+                    <!-- Cuenta -->
                     <div class="mb-3">
                         <label for="createAccount" class="form-label">Nombre de la cuenta</label>
                         <div class="input-group">
@@ -250,9 +214,9 @@
                         </div>
                     </div>
 
-                    <!-- saldo inicial -->
+                    <!-- monto -->
                     <div class="mb-3">
-                        <label for="InitialBalance" class="form-label">Saldo inicial</label>
+                        <label for="InitialBalance" class="form-label">Monto</label>
                         <div class="input-group">
                             <input type="string" id="InitialBalanceId" name="InitialBalance"
                                    class="form-control"
@@ -373,6 +337,144 @@
     </div>
 </div>
 
+<!-- Modal Ingresar -->
+<div class="modal fade" id="modalIngresar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <!-- Header rojo -->
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Ingreso
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Formulario -->
+            <form asp-controller="Account" asp-action="CreateIncome" method="post">
+                <div class="modal-body">
+
+                    <!-- Cuenta -->
+                    <div class="mb-3">
+                        <label for="" class="form-label">Cuenta</label>
+                        <select id="accountId" name="Id"
+                                class="form-select" required>
+                            <option value="">Seleccionar cuenta...</option>
+                            @if (accounts != null)
+                            {
+                                foreach (var account in accounts)
+                                {
+                                    <option value="@account.Id">@account.nombreCuenta</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <!-- monto -->
+                    <div class="mb-3">
+                        <label for="InitialBalance" class="form-label">Monto</label>
+                        <div class="input-group">
+                            <input type="string" id="IngresarMonto" name="Amount"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                                   placeholder="$1000"
+                                   required />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn bg-warning ">
+                            <i class="bi bi-check-circle me-1"></i>Confirmar Ingreso
+                        </button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Transferir -->
+<div class="modal fade" id="modalTransferir" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <!-- Header rojo -->
+            <div class="modal-header bg-gray text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>Transferir
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Formulario -->
+            <form asp-controller="Account" asp-action="CreateTransfer" method="post">
+                <div class="modal-body">
+                    <!-- Campo oculto para el ID -->
+                    @* <input type="hidden" id="accountId" name="Id"/> *@
+
+                    <!-- Cuenta Origen-->
+                    <div class="mb-3">
+                        <label for="" class="form-label">Cuenta Origen</label>
+                        <select id="accountOriginId" name="Id"
+                                class="form-select" required>
+                            <option value="">Seleccionar cuenta...</option>
+                            @if (accounts != null)
+                            {
+                                foreach (var account in accounts)
+                                {
+                                    <option value="@account.Id">@account.nombreCuenta</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Cuenta Destino-->
+                    <div class="mb-3">
+                        <label for="" class="form-label">Cuenta Destino</label>
+                        <select id="accountDestinationId" name="Id"
+                                class="form-select" required>
+                            <option value="">Seleccionar cuenta...</option>
+                            @if (accounts != null)
+                            {
+                                foreach (var account in accounts)
+                                {
+                                    <option value="@account.Id">@account.nombreCuenta</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <!-- monto -->
+                    <div class="mb-3">
+                        <label for="InitialBalance" class="form-label">Monto</label>
+                        <div class="input-group">
+                            <input type="string" id="IncomeAmountTransfer" name="Amount"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                                   placeholder="$1000"
+                                   required />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn bg-warning ">
+                            <i class="bi bi-check-circle me-1"></i>Confirmar Transferencia
+                        </button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 
     // function abrirModalEditar(id, user, rol) {
@@ -405,6 +507,21 @@
         modal.show();
     }
 
+    function abrirModalIngresar() {
+        document.getElementById("accountId").value = "";
+        document.getElementById("IngresarMonto").value = "";
+
+        const modal = new bootstrap.Modal(document.getElementById('modalIngresar'));
+        modal.show();
+    }
+    function abrirModalTransferir(){
+        document.getElementById("accountOriginId").value = "";
+        document.getElementById("accountDestinationId").value = "";
+        document.getElementById("IncomeAmountTransfer").value = "";
+
+        const modal = new bootstrap.Modal(document.getElementById('modalTransferir'));
+        modal.show();
+    }
     // function limpiarFiltros() {
     //     window.location.href = '@Url.Action("Index", "Rubro")';
     // }
