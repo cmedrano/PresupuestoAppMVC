@@ -4,6 +4,7 @@ using PresupuestoMVC.Data;
 using PresupuestoMVC.Models.DTOs;
 using PresupuestoMVC.Models.Entities;
 using PresupuestoMVC.Models.ViewModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PresupuestoMVC.Services
 {
@@ -235,61 +236,99 @@ namespace PresupuestoMVC.Services
 
         public async Task<PaginacionRespuestaDto<GastoResponseDto>> GetFiltradosAsync(FiltroGastoViewRequest filtro, int pagina, int tamañoPagina)
         {
-            // Validar parámetros de paginación
-            if (filtro.Pagina < 1)
-                throw new Exception("La página debe ser mayor a 0.");
-
-            if (filtro.TamañoPagina < 1 || filtro.TamañoPagina > 100)
-                throw new Exception("El tamaño de página debe estar entre 1 y 100.");
-
-            // Validar que el RubroTypeId existe
-            if (filtro.RubroTypeId.HasValue && filtro.RubroTypeId.Value > 0)
+            try
             {
-                var tipoExiste = await _context.RubroType.AnyAsync(rt => rt.Id == filtro.RubroTypeId.Value);
-                if (!tipoExiste)
-                    throw new Exception($"Tipo de rubro con ID {filtro.RubroTypeId} no existe.");
-            }
+                // Validar parámetros de paginación
+                if (filtro.Pagina < 1)
+                    throw new Exception("La página debe ser mayor a 0.");
 
-            // Obtener datos filtrados y paginados
-            var query = _context.Gastos
-                .Include(g => g.RubroType)
-                .Include(g => g.Cuenta)
+                if (filtro.TamañoPagina < 1 || filtro.TamañoPagina > 100)
+                    throw new Exception("El tamaño de página debe estar entre 1 y 100.");
+
+                // Validar que el RubroTypeId existe
+                if (filtro.RubroTypeId.HasValue && filtro.RubroTypeId.Value > 0)
+                {
+                    var tipoExiste = await _context.RubroType.AnyAsync(rt => rt.Id == filtro.RubroTypeId.Value);
+                    if (!tipoExiste)
+                        throw new Exception($"Tipo de rubro con ID {filtro.RubroTypeId} no existe.");
+                }
+
+                // Obtener datos filtrados y paginados
+                var queryGasto = _context.Gastos
+                    .Include(g => g.RubroType)
+                    .Include(g => g.Cuenta)
+                    .AsQueryable();
+
+                var queryIncome = _context.Income
+                        .Include(g => g.RubroType)
+                    .Include(g => g.Cuenta)
                 .AsQueryable();
 
-            // Aplicar filtros
-            if (filtro.RubroTypeId.HasValue && filtro.RubroTypeId.Value > 0)
-            {
-                query = query.Where(g => g.RubroTypeId == filtro.RubroTypeId.Value);
+                // Aplicar filtros
+                if (filtro.RubroTypeId.HasValue && filtro.RubroTypeId.Value > 0)
+                {
+                    queryGasto = queryGasto.Where(g => g.RubroTypeId == filtro.RubroTypeId.Value);
+                    queryIncome = queryIncome.Where(g => g.RubroTypeId == filtro.RubroTypeId.Value);
+                }
+
+                if (filtro.CuentaId.HasValue && filtro.CuentaId.Value > 0)
+                {
+                    queryGasto = queryGasto.Where(g => g.CuentaId == filtro.CuentaId.Value);
+                    queryIncome = queryIncome.Where(g => g.CuentaId == filtro.CuentaId.Value);
+                }
+
+                if (filtro.FechaDesde.HasValue)
+                {
+                    var desdeUtc = DateTime.SpecifyKind(
+                    filtro.FechaDesde.Value.Date,
+                    DateTimeKind.Utc
+ );
+                    queryGasto = queryGasto.Where(g => g.Fecha >= desdeUtc);
+                    queryIncome = queryIncome.Where(g => g.Date >= desdeUtc);
+                }
+
+                if (filtro.FechaHasta.HasValue)
+                {
+                    var hastaUtc = DateTime.SpecifyKind(
+                    filtro.FechaHasta.Value.Date.AddDays(1).AddTicks(-1),
+                    DateTimeKind.Utc
+                    );
+
+                    queryGasto = queryGasto.Where(g => g.Fecha <= hastaUtc);
+                    queryIncome = queryIncome.Where(g => g.Date <= hastaUtc);
+                }
+
+                var gastoDto = _mapper.Map<List<GastoResponseDto>>(queryGasto);
+                var incomeDto = _mapper.Map<List<GastoResponseDto>>(queryIncome);
+
+
+                var datosUnificados = gastoDto
+                    .Concat(incomeDto)
+                    .OrderByDescending(x => x.Fecha)
+                    .ToList();
+
+                var datosPaginados = datosUnificados
+                    .Skip((filtro.Pagina - 1) * filtro.TamañoPagina)
+                    .Take(filtro.TamañoPagina)
+                    .ToList();
+
+                // Obtener total de registros
+                var totalRegistros = datosUnificados.Count;
+
+                var respuesta = new PaginacionRespuestaDto<GastoResponseDto>
+                {
+                    Datos = datosPaginados,
+                    PaginaActual = filtro.Pagina,
+                    TamañoPagina = filtro.TamañoPagina,
+                    TotalRegistros = totalRegistros
+                };
+
+                return respuesta;
             }
-
-            if (filtro.CuentaId.HasValue && filtro.CuentaId.Value > 0)
+            catch (Exception ex)
             {
-                query = query.Where(g => g.CuentaId == filtro.CuentaId.Value);
+                throw ex;
             }
-
-            // Obtener total de registros
-            var totalRegistros = await query.CountAsync();
-
-            // Aplicar paginación
-            var gastos = await query
-                .OrderByDescending(g => g.Fecha)
-                .ThenBy(g => g.Id)
-                .Skip((pagina - 1) * tamañoPagina)
-                .Take(tamañoPagina)
-                .ToListAsync();
-
-            var respuesta = new PaginacionRespuestaDto<GastoResponseDto>
-            {
-                Datos = _mapper.Map<List<GastoResponseDto>>(gastos),
-                PaginaActual = filtro.Pagina,
-                TamañoPagina = filtro.TamañoPagina,
-                TotalRegistros = totalRegistros
-            };
-
-            return respuesta;
         }
-
-
-
     }
 }

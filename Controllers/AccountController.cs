@@ -19,7 +19,7 @@ namespace PresupuestoMVC.Controllers
 
             try
             {
-                var accounts = await _AccountService.GetAllUsersAsync();
+                var accounts = await _AccountService.GetAllAccountAsync();
                 ViewBag.Accounts = accounts;
 
                 return View("Views/Account/Account.cshtml");
@@ -54,7 +54,7 @@ namespace PresupuestoMVC.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> CreateIncome(CreateIncomeViewRequest IncomeRequest)
+        public async Task<IActionResult> CreateIncome(CreateIncomeViewRequest incomeRequest)
         {
             try
             {
@@ -64,9 +64,32 @@ namespace PresupuestoMVC.Controllers
                     return RedirectToAction("Index");
                 }
 
-                await _AccountService.CreateIncomeAsync(IncomeRequest);
+                await _AccountService.CreateIncomeAsync(incomeRequest);
 
                 TempData["Success"] = "se ingreso correctamente";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Error: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateTransfer(CreateTransferViewRequest transferRequest)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Datos inválidos";
+                    return RedirectToAction("Index");
+                }
+
+                await _AccountService.CreateTransferAsync(transferRequest);
+
+                TempData["Success"] = "la transferencia se hizo correctamente";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

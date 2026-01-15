@@ -9,5 +9,6 @@ namespace PresupuestoMVC.Repository.Interfaces
         Task<IEnumerable<CuentaResponseDto>> GetAllAccountAsync();
         Task<CuentaResponseDto> CreateAccountAsync(Cuenta account);
         Task<CuentaResponseDto> CreateIncomeAsync(CreateIncomeViewRequest income);
+        Task<CuentaResponseDto> CreateTransferAsync(CreateTransferViewRequest transfer);
     }
 }

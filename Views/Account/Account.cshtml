@@ -21,7 +21,7 @@
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h1 class="display-5 fw-bold">
-                    <i class="bi bi-cash-stack me-3"></i>
+                    <i class="bi bi-building me-3"></i>
                     Cuentas
                 </h1>
                 <p class="lead mb-0">Sistema de control de cuentas</p>
@@ -49,16 +49,16 @@
                 <div class="d-flex gap-2 align-items-end">
                     <button class="btn btn-warning text-white" id="btnNuevoIngreso"
                             onclick="abrirModalIngresar()">
-                        <i class="bi bi-plus-circle"></i> Nuevo Ingreso
+                        <i class="bi bi-arrow-down"></i> Nuevo Ingreso
                     </button>
                 </div>
             </div>
 
             <div class="col-md-2">
                 <div class="d-flex gap-2 align-items-end">
-                    <button class="btn btn-secondary" id="btnNuevaCuenta"
+                    <button class="btn btn-secondary" id="btnNuevaTranfere"
                             onclick="abrirModalTransferir()">
-                        <i class="bi bi-plus-circle"></i> Transferir
+                        <i class="bi bi-arrow-up"></i> Transferir
                     </button>
                 </div>
             </div>
@@ -344,7 +344,7 @@
             <!-- Header rojo -->
             <div class="modal-header bg-warning text-white">
                 <h5 class="modal-title">
-                    <i class="bi bi-plus-circle me-2"></i>Nuevo Ingreso
+                    <i class="bi bi-arrow-down"></i> Nuevo Ingreso
                 </h5>
                 <button type="button" class="btn-close btn-close-white"
                         data-bs-dismiss="modal"></button>
@@ -383,6 +383,18 @@
                         </div>
                     </div>
 
+                    <!-- Nota -->
+                    <div class="mb-3">
+                        <label for="crearNota" class="form-label">Nota</label>
+                        <div class="input-group">
+                            <textarea id="crearNota"
+                                      name="Note"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Descripción..."></textarea>
+                        </div>
+                    </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
                                 data-bs-dismiss="modal">
@@ -391,7 +403,8 @@
                         <button type="submit" class="btn bg-warning ">
                             <i class="bi bi-check-circle me-1"></i>Confirmar Ingreso
                         </button>
-                    </div>
+                    </div>  
+                </div>
             </form>
         </div>
     </div>
@@ -402,9 +415,9 @@
     <div class="modal-dialog">
         <div class="modal-content border-danger">
             <!-- Header rojo -->
-            <div class="modal-header bg-gray text-white">
+            <div class="modal-header bg-secondary text-white">
                 <h5 class="modal-title">
-                    <i class="bi bi-plus-circle me-2"></i>Transferir
+                    <i class="bi bi-arrow-up"></i> Transferir
                 </h5>
                 <button type="button" class="btn-close btn-close-white"
                         data-bs-dismiss="modal"></button>
@@ -413,13 +426,11 @@
             <!-- Formulario -->
             <form asp-controller="Account" asp-action="CreateTransfer" method="post">
                 <div class="modal-body">
-                    <!-- Campo oculto para el ID -->
-                    @* <input type="hidden" id="accountId" name="Id"/> *@
 
                     <!-- Cuenta Origen-->
                     <div class="mb-3">
                         <label for="" class="form-label">Cuenta Origen</label>
-                        <select id="accountOriginId" name="Id"
+                        <select id="accountOriginId" name="AccountOriginId"
                                 class="form-select" required>
                             <option value="">Seleccionar cuenta...</option>
                             @if (accounts != null)
@@ -435,7 +446,7 @@
                     <!-- Cuenta Destino-->
                     <div class="mb-3">
                         <label for="" class="form-label">Cuenta Destino</label>
-                        <select id="accountDestinationId" name="Id"
+                        <select id="accountDestinationId" name="AccountDestinationId"
                                 class="form-select" required>
                             <option value="">Seleccionar cuenta...</option>
                             @if (accounts != null)
@@ -466,8 +477,8 @@
                                 data-bs-dismiss="modal">
                             Cancelar
                         </button>
-                        <button type="submit" class="btn bg-warning ">
-                            <i class="bi bi-check-circle me-1"></i>Confirmar Transferencia
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="bi bi-check-circle me-1"></i> Transferir
                         </button>
                     </div>
             </form>
@@ -510,6 +521,7 @@
     function abrirModalIngresar() {
         document.getElementById("accountId").value = "";
         document.getElementById("IngresarMonto").value = "";
+        document.getElementById("crearNota").value = "";
 
         const modal = new bootstrap.Modal(document.getElementById('modalIngresar'));
         modal.show();

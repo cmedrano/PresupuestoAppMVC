@@ -1,18 +1,17 @@
-﻿namespace PresupuestoMVC.Models.DTOs
+﻿namespace PresupuestoMVC.Models.Entities
 {
-    public class GastoResponseDto
+    public class Diary
     {
         public int Id { get; set; }
         public DateTime Fecha { get; set; }
         public decimal Monto { get; set; }
         public string? Nota { get; set; }
 
-        // relaciones
+        // Relaciones
         public int RubroTypeId { get; set; }
-        public string RubroTypeNombre { get; set; }
-        public string Tipo { get; set; } // "GASTO" | "INGRESO"
+        public RubroType RubroType { get; set; }
 
         public int CuentaId { get; set; }
-        public string CuentaNombre { get; set; }
+        public Cuenta Cuenta { get; set; }
     }
 }
