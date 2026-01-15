@@ -33,6 +33,8 @@ namespace PresupuestoMVC
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IDiaryService, DiaryService>();
+            builder.Services.AddScoped<IDiaryRepository, DiaryRepository>();
 
             // AutoMapper
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));

@@ -6,5 +6,7 @@
         public int? CuentaId { get; set; }
         public int Pagina { get; set; }
         public int TamañoPagina { get; set; }
+        public DateTime? FechaDesde { get; set; }
+        public DateTime? FechaHasta { get; set; }
     }
 }

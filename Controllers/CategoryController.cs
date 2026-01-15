@@ -45,21 +45,21 @@ namespace PresupuestoMVC.Controllers
             }
         }
 
-        [HttpDelete]
-        public async Task<ActionResult> DeleteCategory(DeleteCategoryViewRequest model)
-        {
-            try
-            {
-                //await _categoryService.CreateAsync(model);
+        //[HttpDelete]
+        //public async Task<ActionResult> DeleteCategory(DeleteCategoryViewRequest model)
+        //{
+        //    try
+        //    {
+        //        await _categoryService.CreateAsync(model);
 
-                TempData["Success"] = "Rubro creado correctamente";
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = "Error: " + ex.Message;
-                return RedirectToAction("Index");
-            }
-        }
+        //        TempData["Success"] = "Rubro creado correctamente";
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["Error"] = "Error: " + ex.Message;
+        //        return RedirectToAction("Index");
+        //    }
+        //}
     }
 }

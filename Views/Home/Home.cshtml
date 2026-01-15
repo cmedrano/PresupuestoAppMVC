@@ -45,6 +45,24 @@
                 </div>
             </div>
 
+            <!-- Diario -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-cash-stack fs-1 text-dark me-3"></i>
+                            <h5 class="card-title mb-0">Diario</h5>
+                        </div>
+                        <p class="card-text text-muted">
+                            Registro diario.
+                        </p>
+                        <a asp-controller="Diary" asp-action="Index" class="btn btn-dark">
+                            Ver Diario
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- Rubros -->
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card shadow-sm border-0 h-100">
@@ -102,3 +120,10 @@
         </div>
     </div>
 </div>
+<style>
+    .card-body{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+</style>

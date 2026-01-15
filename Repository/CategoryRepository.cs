@@ -22,6 +22,7 @@ namespace PresupuestoMVC.Repository
             var categories = await _context.RubroType
                 .Where(r => r.RubroPadreId == null)
                 .Include(r => r.SubRubros)
+                .OrderBy(r => r.nombreRubro)
                 .ToListAsync();
 
             var categoriesDto = categories.Select(x => new CategoryResponseDto()
