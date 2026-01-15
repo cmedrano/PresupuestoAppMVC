@@ -16,7 +16,7 @@ namespace PresupuestoMVC.Services
             _accountRepository = accountRepository;
         }
 
-        public async Task<IEnumerable<CuentaResponseDto>> GetAllUsersAsync()
+        public async Task<IEnumerable<CuentaResponseDto>> GetAllAccountAsync()
         {
             return await _accountRepository.GetAllAccountAsync();
         }
@@ -33,6 +33,10 @@ namespace PresupuestoMVC.Services
         public async Task<CuentaResponseDto> CreateIncomeAsync(CreateIncomeViewRequest income)
         {
             return await _accountRepository.CreateIncomeAsync(income);
+        }
+        public async Task<CuentaResponseDto> CreateTransferAsync(CreateTransferViewRequest transfer)
+        {
+            return await _accountRepository.CreateTransferAsync(transfer);
         }
     }
 }
