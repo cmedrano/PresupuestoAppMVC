@@ -71,7 +71,6 @@ namespace PresupuestoMVC.Repository
 
                 Income incomeDto = new Income()
                 {
-                    RubroTypeId = RUBRO_INGRESO_ID,
                     Amount = income.Amount,
                     Date = DateTime.UtcNow,
                     CuentaId = income.Id,
