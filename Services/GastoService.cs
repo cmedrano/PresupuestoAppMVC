@@ -260,15 +260,14 @@ namespace PresupuestoMVC.Services
                     .AsQueryable();
 
                 var queryIncome = _context.Income
-                        .Include(g => g.RubroType)
-                    .Include(g => g.Cuenta)
+                        .Include(g => g.Cuenta)
                 .AsQueryable();
 
                 // Aplicar filtros
                 if (filtro.RubroTypeId.HasValue && filtro.RubroTypeId.Value > 0)
                 {
                     queryGasto = queryGasto.Where(g => g.RubroTypeId == filtro.RubroTypeId.Value);
-                    queryIncome = queryIncome.Where(g => g.RubroTypeId == filtro.RubroTypeId.Value);
+                    //queryIncome = queryIncome.Where(g => g.RubroTypeId == filtro.RubroTypeId.Value);
                 }
 
                 if (filtro.CuentaId.HasValue && filtro.CuentaId.Value > 0)

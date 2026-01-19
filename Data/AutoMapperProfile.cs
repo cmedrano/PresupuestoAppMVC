@@ -47,7 +47,6 @@ namespace PresupuestoMVC.Data
             CreateMap<Income, GastoResponseDto>()
                 .ForMember(dest => dest.RubroTypeId, opt => opt.MapFrom(_ => 34)) // rubro fijo
                 .ForMember(d => d.Tipo, o => o.MapFrom(_ => "Ingreso"))
-                .ForMember(dest => dest.RubroTypeNombre, opt => opt.MapFrom(src => src.RubroType.nombreRubro))
                 .ForMember(dest => dest.CuentaNombre, opt => opt.MapFrom(src => src.Cuenta.nombreCuenta))
                 .ForMember(dest => dest.Monto, opt => opt.MapFrom(src => src.Amount))
                 .ForMember(dest => dest.Nota, opt => opt.MapFrom(src => src.Note))
