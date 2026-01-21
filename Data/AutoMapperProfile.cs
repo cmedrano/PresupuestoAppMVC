@@ -26,10 +26,6 @@ namespace PresupuestoMVC.Data
                     .ForMember(dest => dest.CuentaNombre, opt => opt.MapFrom(src => src.Cuenta.nombreCuenta))
                     .ForMember(d => d.Tipo, o => o.MapFrom(_ => "Gasto"));
 
-            //CreateMap<Gasto, FiltroGastoViewRequest>()
-            //         .ForMember(dest => dest.FechaDesde, opt => opt.MapFrom(src => src.Fecha))
-            //         .ForMember(dest => dest.FechaHasta, opt => opt.MapFrom(src => src.Fecha));
-
             // Diario
             CreateMap<Diary, DiaryResponseDto>()
                     .ForMember(dest => dest.RubroTypeNombre, opt => opt.MapFrom(src => src.RubroType.nombreRubro))
