@@ -298,11 +298,11 @@ namespace PresupuestoMVC.Services
                 }
 
                 var gastoDto = _mapper.Map<List<GastoResponseDto>>(queryGasto);
-                var incomeDto = _mapper.Map<List<GastoResponseDto>>(queryIncome);
+                //var incomeDto = _mapper.Map<List<GastoResponseDto>>(queryIncome);
 
 
                 var datosUnificados = gastoDto
-                    .Concat(incomeDto)
+                    //.Concat(incomeDto)
                     .OrderByDescending(x => x.Fecha)
                     .ToList();
 
