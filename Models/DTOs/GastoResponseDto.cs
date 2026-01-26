@@ -1,4 +1,5 @@
-﻿namespace PresupuestoMVC.Models.DTOs
+﻿using PresupuestoMVC.Models.ViewModels;
+namespace PresupuestoMVC.Models.DTOs
 {
     public class GastoResponseDto
     {
@@ -13,6 +14,8 @@
         public string Tipo { get; set; } // "GASTO" | "INGRESO"
 
         public int CuentaId { get; set; }
+        public int CreateByUserId { get; set; }
         public string CuentaNombre { get; set; }
+        public CreateGastoResult CreateGastoResult { get; set; }
     }
 }
