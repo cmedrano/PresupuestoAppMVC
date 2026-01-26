@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Repository.Interfaces;
 using PresupuestoMVC.Services;
 using PresupuestoMVC.Services.Interfaces;
+using System.Security.Claims;
 
 namespace PresupuestoMVC.Controllers
 {
@@ -49,7 +51,7 @@ namespace PresupuestoMVC.Controllers
                 ViewBag.PaginaActual = pagina;
                 ViewBag.TamañoPagina = tamañoPagina;
 
-                return View("Views/Gastos/Gastos.cshtml");
+                return View("Views/Diary/Diary.cshtml");
             }
             catch (Exception ex)
             {
@@ -82,6 +84,7 @@ namespace PresupuestoMVC.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(CreateGastoViewRequest model)
         {
@@ -92,8 +95,19 @@ namespace PresupuestoMVC.Controllers
                     TempData["Error"] = "Datos inválidos";
                     return RedirectToAction("Index");
                 }
+                int userId = int.Parse(
+                    User.FindFirstValue(ClaimTypes.NameIdentifier)
+                );
+                var result = await _gastoService.CreateAsync(model, userId);
 
-                await _gastoService.CreateAsync(model);
+                if (result.CreateGastoResult.ConfirmationRequired)
+                {
+                    return Json(new
+                    {
+                        ConfirmationRequired = true,
+                        mensaje = result.CreateGastoResult.Message
+                    });
+                }
 
                 TempData["Success"] = "Gasto creado correctamente";
                 return RedirectToAction("Index");

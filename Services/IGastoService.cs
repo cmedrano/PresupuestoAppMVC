@@ -8,7 +8,7 @@ namespace PresupuestoMVC.Services
     {
         Task<GastoResponseDto> GetByIdAsync(int id);
         Task<IEnumerable<GastoResponseDto>> GetAllGastosAsync();
-        Task<GastoResponseDto> CreateAsync(CreateGastoViewRequest createDto);
+        Task<GastoResponseDto> CreateAsync(CreateGastoViewRequest createDto, int userId);
         Task<GastoResponseDto> UpdateAsync(UpdateGastoViewRequest updateDto);
         Task<bool> DeleteGastoAsync(int gastoId);
         Task<IEnumerable<CuentaResponseDto>> GetAllCuentasAsync();
