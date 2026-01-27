@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using PresupuestoMVC.Data;
 using PresupuestoMVC.Repository;
 using PresupuestoMVC.Repository.Interfaces;
-using PresupuestoMVC.Security;
 using PresupuestoMVC.Services;
 using PresupuestoMVC.Services.Interfaces;
 using System.Text;
@@ -20,11 +19,8 @@ namespace PresupuestoMVC
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            // Configurar DbContext con PostgreSQL
-            var encryptedConn =
-            builder.Configuration["ConnectionStrings:EncryptedDefault"];
-
-            var connectionString = CryptoHelper.Decrypt(encryptedConn);
+            var connectionString =
+                builder.Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(connectionString));
