@@ -1,5 +1,7 @@
 ﻿@using PresupuestoMVC.Models.DTOs
 @using PresupuestoMVC.Models.Entities
+@using System.Globalization
+
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -144,7 +146,7 @@
                                 @gasto.Fecha.ToString("dd/MM/yyyy")
                             </td>
                             <td data-monto="@gasto.Monto">
-                                @gasto.Monto.ToString("C")
+                                @gasto.Monto.ToString("C2", new CultureInfo("es-AR"))
                             </td>
                             <td data-rubroid="@gasto.RubroTypeId">
                                 @gasto.RubroTypeNombre
@@ -324,13 +326,16 @@
                         </div>
                     </div>
 
+                    <input type="hidden" id="forzarSaldoNegativo"
+                           name="ForceNegativeBalance" value="false" />
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary"
                             data-bs-dismiss="modal">
                         Cancelar
                     </button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="button" class="btn btn-success" onclick="crearGasto()">
                         <i class="bi bi-check-circle me-1"></i>Crear Gasto
                     </button>
                 </div>
@@ -478,6 +483,46 @@
     </div>
 </div>
 
+<!-- Modal Saldo Insuficiente -->
+<div class="modal fade" id="modalSaldoInsuficiente" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-warning">
+
+            <!-- Header amarillo -->
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Saldo insuficiente
+                </h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p id="mensajeSaldo" class="mb-0">
+                    La cuenta no tiene saldo suficiente.
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn btn-danger"
+                        onclick="confirmarGastoConSaldoNegativo()">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Realizar gasto igual
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
 <script>
     function AbrirModalCrearGasto() {
         document.getElementById('crearFecha').value = new Date().toISOString().split('T')[0];
@@ -541,6 +586,64 @@
         }
 
         window.location.href = url;
+    }
+
+    function crearGasto() {
+        const form = document.querySelector('#modalCrearGastoId form');
+        const formData = new FormData(form);
+
+        fetch('/Gasto/Create', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.confirmationRequired) {
+                    mostrarModalSaldo(data.mensaje);
+                    return;
+                }
+
+                // Si no requiere confirmación → recargar
+                window.location.href = '/Gasto/Index';
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error al crear gasto');
+            });
+    }
+
+
+    function confirmarSaldoNegativo() {
+        document.getElementById("ForzarSaldoNegativo").value = "true";
+        crearGasto();
+    }
+
+    function mostrarModalSaldo(mensaje) {
+        document.getElementById('mensajeSaldo').innerText = mensaje;
+
+        const modal = new bootstrap.Modal(
+            document.getElementById('modalSaldoInsuficiente')
+        );
+
+        modal.show();
+    }
+
+    function confirmarGastoConSaldoNegativo() {
+        // Setear flag
+        document.getElementById('forzarSaldoNegativo').value = "true";
+
+        // Cerrar modal de advertencia
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById('modalSaldoInsuficiente')
+        );
+        modal.hide();
+
+        // Enviar formulario original
+        document.querySelector('#modalCrearGastoId form').submit();
     }
 
     // document.addEventListener('DOMContentLoaded', () => {

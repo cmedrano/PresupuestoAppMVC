@@ -19,9 +19,11 @@ namespace PresupuestoMVC
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            // Configurar DbContext con PostgreSQL
+            var connectionString =
+                builder.Configuration.GetConnectionString("DefaultConnection");
+
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(connectionString));
 
             // Registro del servicios
             builder.Services.AddScoped<ILoginService, LoginService>();
