@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PresupuestoMVC.Models.Entities;
 using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Services.Interfaces;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace PresupuestoMVC.Controllers
 {
@@ -118,6 +120,7 @@ namespace PresupuestoMVC.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(CreateBudgetViewRequest model)
         {
@@ -129,7 +132,11 @@ namespace PresupuestoMVC.Controllers
                     return RedirectToAction("Index");
                 }
 
-                await _budgetService.CreateAsync(model);
+                int userId = int.Parse(
+                    User.FindFirstValue(ClaimTypes.NameIdentifier)
+                );
+
+                await _budgetService.CreateAsync(model, userId);
 
                 TempData["Success"] = "Rubro creado correctamente";
                 return RedirectToAction("Index");
