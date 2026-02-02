@@ -1,6 +1,7 @@
 ﻿@using PresupuestoMVC.Models.DTOs
 @using PresupuestoMVC.Models.Entities
 @using PresupuestoMVC.Helpers
+@using System.Globalization
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -119,7 +120,7 @@
                     <th scope="col">Valor Inicial</th>
                     <th scope="col">Valor Gastado</th>
                     <th scope="col">Disponible</th>
-                    <th scope="col"></th>
+                    <th scope="col">%</th>
                     <th scope="col">Mes</th>
                     <th scope="col">Año</th>
                     <th scope="col">Acciones</th>
@@ -131,40 +132,45 @@
                     foreach (var rubro in paginacion.Datos)
                     {
                         <tr>
+                            @{
+                                var total = rubro.valorInicial;
+                                var gastado = rubro.valorGastado;
+                                var disponible = total - gastado;
+
+                                var porcentajeGastado = total > 0
+                                ? Math.Min((gastado / total) * 100, 100)
+                                : 0;
+
+                                var porcentajeDisponible = 100 - porcentajeGastado;
+
+                                var barraColor = disponible < 0 ? "bg-danger" : "bg-primary";
+                            }
                             <td data-rubroTypeId="@rubro.tipoRubroNombre.ToString()">
                                 @rubro.tipoRubroNombre.ToString()
                             </td>
                             <td data-valorInicial="@rubro.valorInicial">
-                                $ @rubro.valorInicial
+                                @total.ToString("C2", new CultureInfo("es-AR"))
                             </td>
                             <td data-valorGastado="@rubro.valorGastado">
-                                $ @rubro.valorGastado
+                                @gastado.ToString("C2", new CultureInfo("es-AR"))
                             </td>
-                            <td >
-                                $ @(rubro.valorInicial - rubro.valorGastado)
+                            <td>
+                                @disponible.ToString("C2", new CultureInfo("es-AR"));
                             </td>
                             <td style="min-width:70px;">
-                                @{
-                                    var total = rubro.valorInicial;
-                                    var gastado = rubro.valorGastado;
-                                    var disponible = total - gastado;
-
-                                    var porcentajeGastado = total > 0
-                                    ? Math.Min((gastado / total) * 100, 100)
-                                    : 0;
-
-                                    var porcentajeDisponible = 100 - porcentajeGastado;
-                                }
-
                                 <div class="progress border border-secondary mb-1" style="height: 16px;">
-                                    <div class="progress-bar bg-primary"
+                                    <div class="progress-bar @barraColor"
                                          role="progressbar"
                                          style="width:@porcentajeGastado.ToString("0.##")%">
                                     </div>
-                                    <div class="progress-bar bg-light"
-                                         role="progressbar"
-                                         style="width:@porcentajeDisponible.ToString("0.##")%">
-                                    </div>
+
+                                    @if (disponible >= 0)
+                                    {
+                                        <div class="progress-bar bg-light"
+                                             role="progressbar"
+                                             style="width:@porcentajeDisponible.ToString("0.##")%">
+                                        </div>
+                                    }
                                 </div>
                             </td>
 

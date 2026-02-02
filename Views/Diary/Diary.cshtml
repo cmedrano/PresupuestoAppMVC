@@ -588,8 +588,14 @@
         window.location.href = url;
     }
 
-    function crearGasto() {
+    function crearGasto(event) {
         const form = document.querySelector('#modalCrearGastoId form');
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
         const formData = new FormData(form);
 
         fetch('/Gasto/Create', {
@@ -606,15 +612,16 @@
                     mostrarModalSaldo(data.mensaje);
                     return;
                 }
-
-                // Si no requiere confirmación → recargar
-                window.location.href = '/Gasto/Index';
+                if (data.success && data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                }
             })
             .catch(err => {
                 console.error(err);
                 alert('Error al crear gasto');
             });
     }
+
 
 
     function confirmarSaldoNegativo() {
