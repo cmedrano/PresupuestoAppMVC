@@ -90,11 +90,6 @@ namespace PresupuestoMVC.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    TempData["Error"] = "Datos inválidos";
-                    return RedirectToAction("Index");
-                }
                 int userId = int.Parse(
                     User.FindFirstValue(ClaimTypes.NameIdentifier)
                 );
@@ -108,14 +103,19 @@ namespace PresupuestoMVC.Controllers
                         mensaje = result.CreateGastoResult.Message
                     });
                 }
+                return Json(new
+                {
+                    success = true,
+                    redirectUrl = Url.Action("Index", "Diary")
+                });
 
-                TempData["Success"] = "Gasto creado correctamente";
-                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Error: " + ex.Message;
-                return RedirectToAction("Index");
+                return Json(new
+                {
+                    success = false
+                });
             }
         }
 
