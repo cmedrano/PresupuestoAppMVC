@@ -588,7 +588,7 @@
         window.location.href = url;
     }
 
-    function crearGasto(event) {
+    function crearGasto() {
         const form = document.querySelector('#modalCrearGastoId form');
 
         if (!form.checkValidity()) {
@@ -607,12 +607,11 @@
         })
             .then(res => res.json())
             .then(data => {
-
                 if (data.confirmationRequired) {
                     mostrarModalSaldo(data.mensaje);
                     return;
                 }
-                if (data.success && data.redirectUrl) {
+                if (data.redirectUrl) {
                     window.location.href = data.redirectUrl;
                 }
             })
@@ -620,13 +619,6 @@
                 console.error(err);
                 alert('Error al crear gasto');
             });
-    }
-
-
-
-    function confirmarSaldoNegativo() {
-        document.getElementById("ForzarSaldoNegativo").value = "true";
-        crearGasto();
     }
 
     function mostrarModalSaldo(mensaje) {
@@ -650,7 +642,7 @@
         modal.hide();
 
         // Enviar formulario original
-        document.querySelector('#modalCrearGastoId form').submit();
+        crearGasto();
     }
 
     // document.addEventListener('DOMContentLoaded', () => {
