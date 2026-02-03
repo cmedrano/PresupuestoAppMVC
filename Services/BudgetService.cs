@@ -46,30 +46,39 @@ namespace PresupuestoMVC.Services
             return rubroTypes;
         }
 
-        public async Task<BudgetResponseDTO> CreateAsync(CreateBudgetViewRequest createDto)
+        public async Task<BudgetResponseDTO> CreateAsync(CreateBudgetViewRequest createDto, int userId)
         {
-            // Validaciones
-            var tipoExiste = await _context.RubroType.AnyAsync(rt => rt.Id == createDto.rubroTypeId);
+            try
+            {
+                // Validaciones
+                var tipoExiste = await _context.RubroType.AnyAsync(rt => rt.Id == createDto.rubroTypeId);
 
-            if (!tipoExiste)
-                throw new Exception($"Tipo de rubro con ID {createDto.rubroTypeId} no existe.");
+                if (!tipoExiste)
+                    throw new Exception($"Tipo de rubro con ID {createDto.rubroTypeId} no existe.");
 
-            if (createDto.valorInicial < 0)
-                throw new Exception("El valor inicial no puede ser negativo.");
+                if (createDto.valorInicial < 0)
+                    throw new Exception("El valor inicial no puede ser negativo.");
 
-            if (createDto.Mes < 1 || createDto.Mes > 12)
-                throw new Exception("El mes debe estar entre 1 y 12.");
+                if (createDto.Mes < 1 || createDto.Mes > 12)
+                    throw new Exception("El mes debe estar entre 1 y 12.");
 
-            var rubro = _mapper.Map<Budget>(createDto);
+                createDto.CreateByUserId = userId;
+                createDto.CreateDate = DateTime.UtcNow;
+                var rubro = _mapper.Map<Budget>(createDto);
 
-            _context.Budget.Add(rubro);
-            await _context.SaveChangesAsync();
+                _context.Budget.Add(rubro);
+                await _context.SaveChangesAsync();
 
-            var result = await _context.Budget
-                .Include(r => r.tipoRubro)
-                .FirstOrDefaultAsync(r => r.Id == rubro.Id);
+                var result = await _context.Budget
+                    .Include(r => r.tipoRubro)
+                    .FirstOrDefaultAsync(r => r.Id == rubro.Id);
 
-            return _mapper.Map<BudgetResponseDTO>(result);
+                return _mapper.Map<BudgetResponseDTO>(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<BudgetResponseDTO> UpdateAsync(int id, UpdateBudgetViewRequest updateDto)

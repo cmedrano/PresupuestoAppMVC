@@ -105,7 +105,6 @@ namespace PresupuestoMVC.Controllers
                 }
                 return Json(new
                 {
-                    success = true,
                     redirectUrl = Url.Action("Index", "Diary")
                 });
 
