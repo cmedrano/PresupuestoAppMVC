@@ -321,7 +321,7 @@
                             <textarea id="crearNota"
                                       name="Nota"
                                       class="form-control"
-                                      rows="3"
+                                      rows="1"
                                       placeholder="Descripción..."></textarea>
                         </div>
                     </div>
@@ -411,7 +411,7 @@
                     <div class="mb-3">
                         <label for="editNota" class="form-label">Nota</label>
                         <textarea id="editNota" name="Nota"
-                                  class="form-control" rows="3"></textarea>
+                                  class="form-control" rows="1"></textarea>
                     </div>
 
                 </div>
@@ -597,7 +597,7 @@
         }
 
         const formData = new FormData(form);
-
+        console.log(formData.get("RubroTypeId"));
         fetch('/Gasto/Create', {
             method: 'POST',
             body: formData,
@@ -644,6 +644,56 @@
         // Enviar formulario original
         crearGasto();
     }
+
+    document.getElementById("crearFecha")
+        .addEventListener("change", loadCategoriesByDate);
+
+    function loadCategoriesByDate() {
+
+        const date = document.getElementById("crearFecha").value;
+
+        if (!date) return;
+
+        fetch(`/Budget/GetCategoriesbyDate?date=${date}`)
+            .then(res => res.json())
+            .then(data => {
+
+                const select = document.getElementById("crearRubroId");
+
+                select.innerHTML = '<option value="">Seleccionar rubro...</option>';
+
+                // data.forEach(rubro => {
+
+                //     const option = document.createElement("option");
+                //     option.value = rubro.Id;
+                //     option.text = rubro.nombreRubro;
+
+                //     select.appendChild(option);
+                // });
+                data.forEach(r => {
+                    select.innerHTML += `<option value="${r.id}">${r.nombreRubro}</option>`;
+                });
+            })
+            .catch(err => console.error(err));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadCategoriesByDate();
+    });
+
+    const modalCrear = document.getElementById('modalCrearGastoId');
+
+    modalCrear.addEventListener('shown.bs.modal', function () {
+
+        const fechaInput = document.getElementById('crearFecha');
+
+        fechaInput.focus();
+
+        // Abre el calendario automáticamente
+        if (fechaInput.showPicker) {
+            fechaInput.showPicker();
+        }
+    });
 
     // document.addEventListener('DOMContentLoaded', () => {
 

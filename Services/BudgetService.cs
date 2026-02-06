@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PresupuestoMVC.Data;
 using PresupuestoMVC.Models.DTOs;
@@ -208,6 +209,23 @@ namespace PresupuestoMVC.Services
             {
                 throw ex;
             }
+        }
+        public async Task<IEnumerable<CategoryResponseDto>> GetCategoriesbyDateAsync(DateTime date)
+        {
+            int month = date.Month;
+            int year = date.Year;
+            var categories = await _context.Budget
+                .Include(b => b.tipoRubro)
+                .Where(b => b.Mes == month && b.Anio == year)
+                .Select(b => new CategoryResponseDto
+                {
+                   Id = b.tipoRubro.Id,
+                   nombreRubro = b.tipoRubro.nombreRubro
+                })
+                .Distinct()
+                .ToListAsync();
+
+            return categories;
         }
     }
 }

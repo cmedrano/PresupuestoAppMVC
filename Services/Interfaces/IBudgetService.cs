@@ -13,5 +13,6 @@ namespace PresupuestoMVC.Services.Interfaces
         Task<BudgetResponseDTO> UpdateAsync(int id, UpdateBudgetViewRequest updateDto);
         Task<bool> DeleteAsync(int id);
         Task<PaginacionRespuestaDto<BudgetResponseDTO>> GetFiltradosAsync(FiltroBudgetViewRequest filtro, int pagina, int tamañoPagina);
+        Task<IEnumerable<CategoryResponseDto>> GetCategoriesbyDateAsync(DateTime date);
     }
 }
