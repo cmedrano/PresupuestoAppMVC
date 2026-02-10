@@ -138,7 +138,12 @@ namespace PresupuestoMVC.Controllers
                     User.FindFirstValue(ClaimTypes.NameIdentifier)
                 );
 
-                await _budgetService.CreateAsync(model, userId);
+                int companyId = int.Parse(User.FindFirst("CompanyId").Value);
+
+                model.CreateByUserId = userId;
+                model.CompanyId = companyId;
+
+                await _budgetService.CreateAsync(model);
 
                 TempData["Success"] = "Rubro creado correctamente";
                 return RedirectToAction("Index");

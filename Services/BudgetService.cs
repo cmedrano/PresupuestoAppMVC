@@ -47,7 +47,7 @@ namespace PresupuestoMVC.Services
             return rubroTypes;
         }
 
-        public async Task<BudgetResponseDTO> CreateAsync(CreateBudgetViewRequest createDto, int userId)
+        public async Task<BudgetResponseDTO> CreateAsync(CreateBudgetViewRequest createDto)
         {
             try
             {
@@ -63,7 +63,6 @@ namespace PresupuestoMVC.Services
                 if (createDto.Mes < 1 || createDto.Mes > 12)
                     throw new Exception("El mes debe estar entre 1 y 12.");
 
-                createDto.CreateByUserId = userId;
                 createDto.CreateDate = DateTime.UtcNow;
                 var rubro = _mapper.Map<Budget>(createDto);
 

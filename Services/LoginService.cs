@@ -33,31 +33,38 @@ namespace PresupuestoMVC.Services
 
         public async Task<LoginResponseDto> LoginAsync(LoginViewRequest loginRequest)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserName == loginRequest.Username);
-
-            // Verificar si el usuario existe
-            if (user == null)
-                throw new UnauthorizedAccessException("Usuario incorrectos");
-
-            // Verifico contraseña
-            bool isPasswordValid = VerifyPassword(loginRequest.Password, user.UserPasswordHash);
-
-            if (!isPasswordValid)
-                throw new UnauthorizedAccessException("Contraseña incorrectos");
-
-            // Generar token JWT y RefreshToken para el usuario autenticado
-            var token = GenerateJwtToken(user);
-            var refreshToken = await GenerateRefreshToken(user.Id);
-
-            // Retornar respuesta con el token JWT y información del usuario
-            return new LoginResponseDto
+            try
             {
-                Token = token, // Token JWT generado
-                RefreshToken = refreshToken.Token, // Refresh token generado
-                Expiration = DateTime.UtcNow.AddMinutes(_jwtExpiryMinutes), // Fecha de expiración del token
-                Username = user.UserName // Nombre de usuario
-            };
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.UserName == loginRequest.Username);
+
+                // Verificar si el usuario existe
+                if (user == null)
+                    throw new UnauthorizedAccessException("Usuario incorrectos");
+
+                // Verifico contraseña
+                bool isPasswordValid = VerifyPassword(loginRequest.Password, user.UserPasswordHash);
+
+                if (!isPasswordValid)
+                    throw new UnauthorizedAccessException("Contraseña incorrectos");
+
+                // Generar token JWT y RefreshToken para el usuario autenticado
+                var token = GenerateJwtToken(user);
+                var refreshToken = await GenerateRefreshToken(user.Id);
+
+                // Retornar respuesta con el token JWT y información del usuario
+                return new LoginResponseDto
+                {
+                    Token = token, // Token JWT generado
+                    RefreshToken = refreshToken.Token, // Refresh token generado
+                    Expiration = DateTime.UtcNow.AddMinutes(_jwtExpiryMinutes), // Fecha de expiración del token
+                    Username = user.UserName // Nombre de usuario
+                };
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         // Método para verificar contraseñas con Argon2
@@ -113,7 +120,9 @@ namespace PresupuestoMVC.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Name, user.UserName), // Claim con el nombre de usuario
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) // Claim con el ID del usuario
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Claim con el ID del usuario
+                    new Claim(ClaimTypes.Role, user.Role.ToString()),
+                    new Claim("CompanyId", user.CompanyId.ToString())
                 }),
 
                 // Tiempo de expiración del token

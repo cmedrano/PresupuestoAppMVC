@@ -23,12 +23,13 @@ namespace PresupuestoMVC.Repository
         public async Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync()
         {
             var users = await _context.Users.ToListAsync();
-            // falta agregar el campo rol
+
             var usersDto = users.Select(x => new UserResponseDTO()
             {
                 Id = x.Id,
                 UserName = x.UserName,
-                UserEmail = x.UserEmail
+                UserEmail = x.UserEmail,
+                Rol = x.Role
 
             }).ToList();
             return usersDto;

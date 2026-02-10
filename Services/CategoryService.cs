@@ -4,6 +4,7 @@ using PresupuestoMVC.Models.Entities;
 using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Repository.Interfaces;
 using PresupuestoMVC.Services.Interfaces;
+using System.ComponentModel.Design;
 
 namespace PresupuestoMVC.Services
 {
@@ -29,6 +30,7 @@ namespace PresupuestoMVC.Services
             {
                 nombreRubro = CreateDto.Rubro ?? CreateDto.SubCategory,
                 RubroPadreId = rubroPadreId,
+                CompanyId = CreateDto.CompanyId
             };
             return await _categoryRepository.CreateAsync(CategoryDto);
         }

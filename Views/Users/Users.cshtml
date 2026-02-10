@@ -428,6 +428,8 @@
 
  <script>
 
+    const userRole = "@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value";
+
     function abrirModalEditar(id, user, rol) {
         // Llenar formulario
         document.getElementById('editUserId').value = id;
@@ -440,6 +442,14 @@
     }
 
     function abrirModalCrear() {
+        if (userRole !== 'Administrador') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Acceso denegado',
+                text: 'No tenés permisos para crear usuarios'
+            });
+            return;
+        }
         // Resetear formulario
         document.getElementById('createUserId').value = '';
         document.getElementById('createPassword').value = '';

@@ -43,7 +43,7 @@ namespace PresupuestoMVC.Services
             return _mapper.Map<IEnumerable<GastoResponseDto>>(gasto);
         }
 
-        public async Task<GastoResponseDto> CreateAsync(CreateGastoViewRequest createDto, int userId)
+        public async Task<GastoResponseDto> CreateAsync(CreateGastoViewRequest createDto)
         {
             if (createDto == null)
                 throw new Exception($"El gasto no puede ser nulo." + nameof(createDto));
@@ -60,7 +60,6 @@ namespace PresupuestoMVC.Services
 
             try
             {
-                createDto.CreateByUserId = userId;
                 createDto.CreateDate = DateTime.UtcNow;
                 var cuenta = await _context.Cuentas
                     .FirstOrDefaultAsync(c => c.Id == createDto.CuentaId);

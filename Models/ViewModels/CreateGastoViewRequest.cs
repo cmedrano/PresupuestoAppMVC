@@ -9,6 +9,7 @@
         public string? Nota { get; set; }
         public bool ForceNegativeBalance { get; set; } = false;
         public int CreateByUserId { get; set; }
+        public int CompanyId { get; set; }
         public DateTime CreateDate { get; set; }
     }
 }
