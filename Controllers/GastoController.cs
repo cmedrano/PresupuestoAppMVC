@@ -93,7 +93,13 @@ namespace PresupuestoMVC.Controllers
                 int userId = int.Parse(
                     User.FindFirstValue(ClaimTypes.NameIdentifier)
                 );
-                var result = await _gastoService.CreateAsync(model, userId);
+
+                int companyId = int.Parse(User.FindFirst("CompanyId").Value);
+
+                model.CreateByUserId = userId;
+                model.CompanyId = companyId;
+
+                var result = await _gastoService.CreateAsync(model);
 
                 if (result.CreateGastoResult.ConfirmationRequired)
                 {

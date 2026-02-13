@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PresupuestoMVC.Data;
 using PresupuestoMVC.Models.DTOs;
 using PresupuestoMVC.Models.Entities;
@@ -42,7 +43,7 @@ namespace PresupuestoMVC.Services
             return _mapper.Map<IEnumerable<GastoResponseDto>>(gasto);
         }
 
-        public async Task<GastoResponseDto> CreateAsync(CreateGastoViewRequest createDto, int userId)
+        public async Task<GastoResponseDto> CreateAsync(CreateGastoViewRequest createDto)
         {
             if (createDto == null)
                 throw new Exception($"El gasto no puede ser nulo." + nameof(createDto));
@@ -59,7 +60,6 @@ namespace PresupuestoMVC.Services
 
             try
             {
-                createDto.CreateByUserId = userId;
                 createDto.CreateDate = DateTime.UtcNow;
                 var cuenta = await _context.Cuentas
                     .FirstOrDefaultAsync(c => c.Id == createDto.CuentaId);
@@ -166,7 +166,7 @@ namespace PresupuestoMVC.Services
                     throw new Exception("Rubro nuevo no encontrado");
 
                 gasto.Monto = updateDto.Monto;
-                gasto.Fecha = updateDto.Fecha;
+                gasto.Fecha = DateTime.SpecifyKind(updateDto.Fecha.Date, DateTimeKind.Utc); ;
                 gasto.RubroTypeId = updateDto.RubroTypeId;
                 gasto.CuentaId = updateDto.CuentaId;
                 gasto.Nota = updateDto.Nota;

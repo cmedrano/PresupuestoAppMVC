@@ -30,6 +30,8 @@ namespace PresupuestoMVC.Services
                 UserName = userRequest.UserName,
                 UserEmail = userRequest.Email,
                 UserPasswordHash = passwordHash,
+                CompanyId = userRequest.CompanyId,
+                Role = userRequest.Rol,
                 CreateDate = DateTime.UtcNow
             };
             return await _userRepository.CreateUserAsync(userDto);

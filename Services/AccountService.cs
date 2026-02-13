@@ -26,7 +26,8 @@ namespace PresupuestoMVC.Services
             {
                 nombreCuenta = accountRequest.AccountName,
                 SaldoInicial = accountRequest.InitialBalance,
-                SaldoActual = accountRequest.InitialBalance
+                SaldoActual = accountRequest.InitialBalance,
+                CompanyId = accountRequest.CompanyId
             };
             return await _accountRepository.CreateAccountAsync(account);
         }

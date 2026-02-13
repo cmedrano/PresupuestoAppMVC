@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PresupuestoMVC.Data;
 using PresupuestoMVC.Models.DTOs;
@@ -46,7 +47,7 @@ namespace PresupuestoMVC.Services
             return rubroTypes;
         }
 
-        public async Task<BudgetResponseDTO> CreateAsync(CreateBudgetViewRequest createDto, int userId)
+        public async Task<BudgetResponseDTO> CreateAsync(CreateBudgetViewRequest createDto)
         {
             try
             {
@@ -62,7 +63,6 @@ namespace PresupuestoMVC.Services
                 if (createDto.Mes < 1 || createDto.Mes > 12)
                     throw new Exception("El mes debe estar entre 1 y 12.");
 
-                createDto.CreateByUserId = userId;
                 createDto.CreateDate = DateTime.UtcNow;
                 var rubro = _mapper.Map<Budget>(createDto);
 
@@ -208,6 +208,23 @@ namespace PresupuestoMVC.Services
             {
                 throw ex;
             }
+        }
+        public async Task<IEnumerable<CategoryResponseDto>> GetCategoriesbyDateAsync(DateTime date)
+        {
+            int month = date.Month;
+            int year = date.Year;
+            var categories = await _context.Budget
+                .Include(b => b.tipoRubro)
+                .Where(b => b.Mes == month && b.Anio == year)
+                .Select(b => new CategoryResponseDto
+                {
+                   Id = b.tipoRubro.Id,
+                   nombreRubro = b.tipoRubro.nombreRubro
+                })
+                .Distinct()
+                .ToListAsync();
+
+            return categories;
         }
     }
 }

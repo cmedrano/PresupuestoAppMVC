@@ -4,6 +4,8 @@ using PresupuestoMVC.Enums;
 using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Services.Interfaces;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace PresupuestoMVC.Controllers
 {
@@ -40,6 +42,7 @@ namespace PresupuestoMVC.Controllers
 
         }
 
+        [Authorize(Roles = nameof(UserRol.Administrador))]
         [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserViewRequest userRequest)
         {
@@ -50,6 +53,9 @@ namespace PresupuestoMVC.Controllers
                     TempData["Error"] = "Datos inválidos";
                     return RedirectToAction("Index");
                 }
+
+                int companyId = int.Parse(User.FindFirst("CompanyId").Value);
+                userRequest.CompanyId = companyId;
 
                 var result = await _userService.CreateUserAsync(userRequest);
                 if (result != null)

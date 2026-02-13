@@ -2,7 +2,7 @@
 using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Services;
 using PresupuestoMVC.Services.Interfaces;
-
+using Microsoft.AspNetCore.Authorization;
 namespace PresupuestoMVC.Controllers
 {
     public class CategoryController : Controller
@@ -28,11 +28,15 @@ namespace PresupuestoMVC.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateCategory(CreateCategoryViewRequest model)
         {
             try
             {
+                int companyId = int.Parse(User.FindFirst("CompanyId").Value);
+
+                model.CompanyId = companyId;
                 await _categoryService.CreateAsync(model);
 
                 TempData["Success"] = "Rubro creado correctamente";

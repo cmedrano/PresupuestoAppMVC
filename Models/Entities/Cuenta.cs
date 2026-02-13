@@ -6,5 +6,6 @@
         public string nombreCuenta { get; set; }
         public decimal SaldoInicial { get; set; }
         public decimal SaldoActual { get; set; }
+        public int CompanyId { get; set; }
     }
 }
