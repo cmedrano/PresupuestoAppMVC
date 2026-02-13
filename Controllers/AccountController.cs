@@ -4,6 +4,7 @@ using PresupuestoMVC.Enums;
 using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Services;
 using PresupuestoMVC.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PresupuestoMVC.Controllers
 {
@@ -31,6 +32,7 @@ namespace PresupuestoMVC.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateAccount(CreateAccountViewRequest accountRequest)
         {
@@ -41,6 +43,9 @@ namespace PresupuestoMVC.Controllers
                     TempData["Error"] = "Datos inválidos";
                     return RedirectToAction("Index");
                 }
+
+                int companyId = int.Parse(User.FindFirst("CompanyId").Value);
+                accountRequest.CompanyId = companyId;
 
                 await _AccountService.CreateAccountAsync(accountRequest);
 

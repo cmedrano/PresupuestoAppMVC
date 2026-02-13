@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PresupuestoMVC.Enums;
 using PresupuestoMVC.Models.Entities;
 using PresupuestoMVC.Models.ViewModels;
 using PresupuestoMVC.Services.Interfaces;
@@ -136,7 +138,12 @@ namespace PresupuestoMVC.Controllers
                     User.FindFirstValue(ClaimTypes.NameIdentifier)
                 );
 
-                await _budgetService.CreateAsync(model, userId);
+                int companyId = int.Parse(User.FindFirst("CompanyId").Value);
+
+                model.CreateByUserId = userId;
+                model.CompanyId = companyId;
+
+                await _budgetService.CreateAsync(model);
 
                 TempData["Success"] = "Rubro creado correctamente";
                 return RedirectToAction("Index");
@@ -171,7 +178,11 @@ namespace PresupuestoMVC.Controllers
             }
         }
 
-
-
+        [HttpGet]
+        public async Task<IActionResult> GetCategoriesbyDate(DateTime date)
+        {
+            var categories = await _budgetService.GetCategoriesbyDateAsync(date);
+            return Json(categories);
+        }
     }
 }

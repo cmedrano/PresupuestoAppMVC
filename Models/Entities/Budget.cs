@@ -10,6 +10,7 @@
         public int Anio { get; set; }
         public User CreateByUser { get; set; }
         public int CreateByUserId { get; set; }
+        public int CompanyId { get; set; }
         public DateTime CreateDate { get; set; }
 
         // Navegación
