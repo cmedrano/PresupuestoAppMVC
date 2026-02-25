@@ -149,6 +149,16 @@
                                     )">
                                     <i class="bi bi-trash"></i>
                                 </button>
+                                @if (User.IsInRole(nameof(UserRol.Administrador)))
+                                {
+                                    <button class="btn btn-sm btn-warning"
+                                    onclick="resetPassword(
+                                        '@user.UserEmail',
+                                        '@user.UserName',
+                                        '@((UserRol)user.Rol)')">
+                                        <i class="bi bi-key"></i>
+                                    </button>
+                                }
                             </td>
                         </tr>
                     }
@@ -426,6 +436,54 @@
     </div>
 </div>
 
+<!-- modal reset password -->
+ <div class="modal fade" id="modalReset" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-warning">
+            <!-- Header amarillo -->
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>Cambiar contraseña
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Formulario -->
+            <form asp-controller="User" asp-action="ResetPassword" method="post">
+                <div class="modal-body">
+
+                    <!-- email -->
+                    <div class="mb-3">
+                        <label for="createUserId" class="form-label">Generar automaticamente una nueva contraseña para el siguiente usuario?, NOTA: la nueva contraseña se enviara por correo</label>
+                        <div class="input-group">
+                            <input type="hidden" id="email" name="email" />
+                        </div>
+                    </div>
+
+                    <!-- Información del usuario -->
+                    <div class="alert alert-light mt-3 text-start" id="resetPasswordId">
+                        <div class="row">
+                            <div class="col-6"><strong>Correo:</strong> <span id="emailInfo">-</span></div>
+                            <div class="col-6"><strong>Usuario:</strong> <span id="username">-</span></div>
+                            <div class="col-6"><strong>Rol:</strong> <span id="userRoleId">-</span></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle me-1"></i>confirmar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 
+
  <script>
 
     const userRole = "@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value";
@@ -469,6 +527,26 @@
 
         // Mostrar modal
         const modal = new bootstrap.Modal(document.getElementById('modalEliminar'));
+        modal.show();
+    }
+
+    function resetPassword(email, username, rol) {
+        if (userRole !== 'Administrador') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Acceso denegado',
+                text: 'No tenés permisos para utilizar esta opcion'
+            });
+            return;
+        }
+        console.log("reset para:", email, username)
+        document.getElementById('email').value = email;
+        document.getElementById('emailInfo').innerText = email;
+        document.getElementById('username').innerText = username;
+        document.getElementById('userRoleId').innerText = rol;
+
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalReset'));
         modal.show();
     }
 
