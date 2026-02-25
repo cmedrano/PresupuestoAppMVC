@@ -149,13 +149,13 @@
                                 @rubro.tipoRubroNombre.ToString()
                             </td>
                             <td data-valorInicial="@rubro.valorInicial">
-                                @total.ToString("C2", new CultureInfo("es-AR"))
+                                @total.ToString("C0", new CultureInfo("es-AR"))
                             </td>
                             <td data-valorGastado="@rubro.valorGastado">
-                                @gastado.ToString("C2", new CultureInfo("es-AR"))
+                                @gastado.ToString("C0", new CultureInfo("es-AR"))
                             </td>
                             <td>
-                                @disponible.ToString("C2", new CultureInfo("es-AR"));
+                                @disponible.ToString("C0", new CultureInfo("es-AR"))
                             </td>
                             <td style="min-width:70px;">
                                 <div class="progress border border-secondary mb-1" style="height: 16px;">
@@ -478,7 +478,7 @@
             </div>
             
             <!-- Formulario -->
-            <form asp-controller="Rubro" asp-action="Delete" method="post">
+            <form asp-controller="Budget" asp-action="Delete" method="post">
                 <div class="modal-body">
                     <!-- Campo oculto para el ID -->
                     <input type="hidden" id="deleteRubroId" name="id" />
