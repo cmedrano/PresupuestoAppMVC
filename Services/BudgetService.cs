@@ -164,6 +164,8 @@ namespace PresupuestoMVC.Services
                 .Include(r => r.tipoRubro)
                 .AsQueryable();
 
+            var cont = await query.CountAsync();
+
             // Aplicar filtros
             if (filtro.Mes.HasValue && filtro.Mes.Value > 0)
             {
