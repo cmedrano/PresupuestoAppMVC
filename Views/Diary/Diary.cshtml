@@ -146,7 +146,7 @@
                                 @gasto.Fecha.ToString("dd/MM/yyyy")
                             </td>
                             <td data-monto="@gasto.Monto">
-                                @gasto.Monto.ToString("C2", new CultureInfo("es-AR"))
+                                @gasto.Monto.ToString("C0", new CultureInfo("es-AR"))
                             </td>
                             <td data-rubroid="@gasto.RubroTypeId">
                                 @gasto.RubroTypeNombre

@@ -76,5 +76,24 @@ namespace PresupuestoMVC.Controllers
                 return RedirectToAction("Index");
             }
         }
+
+        [Authorize(Roles = nameof(UserRol.Administrador))]
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            try
+            {
+                int userId = int.Parse(
+                     User.FindFirstValue(ClaimTypes.NameIdentifier)
+                 );
+
+                var result = await _userService.ResetPassword(email, userId);
+                return RedirectToAction("Index");
+            }
+            catch(Exception ex)
+            {
+                return RedirectToAction("Index");
+            }
+        }
     }
 }

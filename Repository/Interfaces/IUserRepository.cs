@@ -8,5 +8,6 @@ namespace PresupuestoMVC.Repository.Interfaces
     {
         Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync();
         Task<UserResponseDTO> CreateUserAsync(User user);
+        Task<bool> ResetPassword(string email, int userId, string randomPassword);
     }
 }

@@ -36,6 +36,11 @@ namespace PresupuestoMVC.Services
             };
             return await _userRepository.CreateUserAsync(userDto);
         }
+        public async Task<bool> ResetPassword(string email, int userId)
+        {
+            var randomPassword = GeneratePassword.GenerateRandomPassword(10);
+            return await _userRepository.ResetPassword(email, userId, randomPassword);
+        }
 
     }
 }
